@@ -1,0 +1,32 @@
+name: Push to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2.1.2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: npm install, build
+        run: |
+          npm install -g @angular/cli
+          npm ci
+          ng deploy --base-href=/TextTools/ --repo=https://github.com/mfcar/TextTools.git --name=texttools --email=$EMAIL --message="Build from ${GITHUB_SHA} in the source repository." --branch=github_page
+        env:
+          CI: true
+          GH_TOKEN: ${{ secrets.GITHUBTOKEN }}
+          EMAIL: ${{ secrets.EMAIL }}
