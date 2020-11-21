@@ -17,6 +17,7 @@ import {MatCardModule} from '@angular/material/card';
 import {FooterComponent} from './shared/components/footer/footer.component';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatButtonModule} from '@angular/material/button';
+import {CodeEditorModule} from '@ngstack/code-editor';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,8 @@ import {MatButtonModule} from '@angular/material/button';
     MatSidenavModule,
     MatCardModule,
     MatDividerModule,
-    MatButtonModule
+    MatButtonModule,
+    CodeEditorModule.forRoot()
   ],
   providers: [],
   bootstrap: [AppComponent]

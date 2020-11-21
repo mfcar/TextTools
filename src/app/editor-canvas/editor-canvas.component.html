@@ -13,7 +13,11 @@
     <mat-drawer-content>
       <h1 class="mat-h1">Editor</h1>
       <mat-card>
-        <textarea></textarea>
+        <ngs-code-editor
+          [theme]="theme"
+          [options]="options"
+          (valueChanged)="onCodeChanged($event)">
+        </ngs-code-editor>
       </mat-card>
     </mat-drawer-content>
     <mat-drawer mode="side" opened position="end" [opened]="sideBarOpen">
@@ -21,6 +25,8 @@
     </mat-drawer>
   </mat-drawer-container>
 </div>
+
+<div><pre>{{text}}</pre></div>
 
 
 <app-footer></app-footer>
