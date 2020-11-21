@@ -1,32 +1,53 @@
-<mat-toolbar color="primary">
-  <mat-toolbar-row>
-    <span>Text Tools</span>
+<app-header (toggleHistorySidebarEvent)="commandHistorySidebarToggler()"></app-header>
 
-    <span>Select a command</span>
-    <button mat-icon-button (click)="toggleSideBar()">
-      <mat-icon class="example-icon" aria-hidden="false" aria-label="Example user verified icon">history</mat-icon>
-    </button>
-  </mat-toolbar-row>
-</mat-toolbar>
-<div class="grid-container">
-  <mat-drawer-container>
-    <mat-drawer-content>
-      <h1 class="mat-h1">Editor</h1>
-      <mat-card>
+<mat-drawer-container>
+  <mat-drawer-content>
+    <mat-card>
+      <mat-card-content>
+        <form>
+          <mat-form-field>
+            <input type="text" placeholder="Select a command" matInput [formControl]="commandSelected"
+                   [matAutocomplete]="auto">
+            <mat-autocomplete #auto="matAutocomplete">
+              <mat-option *ngFor="let option of options" [value]="option">
+                {{option}}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </form>
+      </mat-card-content>
+    </mat-card>
+    <br/>
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Editor</mat-card-title>
+        <mat-card-subtitle>
+          <ng-container [ngPlural]="characterCount">
+            <ng-template ngPluralCase="=0">No character</ng-template>
+            <ng-template ngPluralCase="=1">1 character</ng-template>
+            <ng-template ngPluralCase="other">{{characterCount}} characters</ng-template>
+          </ng-container>
+          -
+          <ng-container [ngPlural]="linesNumber">
+            <ng-template ngPluralCase="=0">No line</ng-template>
+            <ng-template ngPluralCase="=1">1 line</ng-template>
+            <ng-template ngPluralCase="other">{{linesNumber}} lines</ng-template>
+          </ng-container>
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
         <ngs-code-editor
           [theme]="theme"
-          [options]="options"
+          [options]="editorOptions"
           (valueChanged)="onCodeChanged($event)">
         </ngs-code-editor>
-      </mat-card>
-    </mat-drawer-content>
-    <mat-drawer mode="side" opened position="end" [opened]="sideBarOpen">
-        <app-history-sidebar></app-history-sidebar>
-    </mat-drawer>
-  </mat-drawer-container>
-</div>
-
-<div><pre>{{text}}</pre></div>
+      </mat-card-content>
+    </mat-card>
+  </mat-drawer-content>
+  <mat-drawer mode="side" opened position="end" [opened]="commandsHistorySidebar">
+    <app-history-sidebar></app-history-sidebar>
+  </mat-drawer>
+</mat-drawer-container>
 
 
 <app-footer></app-footer>
