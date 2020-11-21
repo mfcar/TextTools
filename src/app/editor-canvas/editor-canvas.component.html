@@ -3,10 +3,25 @@
     <span>Text Tools</span>
 
     <span>Select a command</span>
-
-    <mat-icon class="example-icon" aria-hidden="false" aria-label="Example user verified icon">history</mat-icon>
+    <button mat-icon-button (click)="toggleSideBar()">
+      <mat-icon class="example-icon" aria-hidden="false" aria-label="Example user verified icon">history</mat-icon>
+    </button>
   </mat-toolbar-row>
 </mat-toolbar>
-<mat-card>Editor</mat-card>
+<div class="grid-container">
+  <mat-drawer-container>
+    <mat-drawer-content>
+      <h1 class="mat-h1">Editor</h1>
+      <mat-card>
+        <textarea></textarea>
+      </mat-card>
+    </mat-drawer-content>
+    <mat-drawer mode="side" opened position="end" [opened]="sideBarOpen">
+        <h2>Command history</h2>
+        Command 1
+    </mat-drawer>
+  </mat-drawer-container>
+</div>
 
 
+<app-footer></app-footer>
