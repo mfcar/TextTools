@@ -17,7 +17,6 @@ import {MatCardModule} from '@angular/material/card';
 import {FooterComponent} from './shared/components/footer/footer.component';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatButtonModule} from '@angular/material/button';
-import {CodeEditorModule} from '@ngstack/code-editor';
 import { HeaderComponent } from './shared/components/header/header.component';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -121,8 +120,7 @@ import {MatDialogModule} from '@angular/material/dialog';
     MatTreeModule,
     OverlayModule,
     PortalModule,
-    ScrollingModule,
-    CodeEditorModule.forRoot()
+    ScrollingModule
   ],
   providers: [],
   bootstrap: [AppComponent]

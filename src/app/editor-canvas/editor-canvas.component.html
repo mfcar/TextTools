@@ -5,16 +5,23 @@
     <mat-card>
       <mat-card-content>
         <form>
-          <mat-form-field>
+          <!--<mat-form-field>
             <input type="text" placeholder="Select a command" matInput [formControl]="commandSelected"
                    [matAutocomplete]="auto">
             <mat-autocomplete #auto="matAutocomplete">
-              <mat-option *ngFor="let option of options" [value]="option">
+              <mat-option *ngFor="let option of options" [value]="option" (onSelectionChange)="executeTransform($event)">
                 {{option}}
               </mat-option>
             </mat-autocomplete>
-          </mat-form-field>
+          </mat-form-field>-->
+          <select [formControl]="commandSelected" (ngModelChange)="executeTransform()">
+            <ng-container *ngFor="let script of scriptOptions">
+              <option [value]="script">{{script}}</option>
+            </ng-container>
+          </select>
         </form>
+        <br/>
+        Selected: {{commandSelected.value}}
       </mat-card-content>
     </mat-card>
     <br/>
@@ -36,11 +43,7 @@
         </mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
-        <ngs-code-editor
-          [theme]="theme"
-          [options]="editorOptions"
-          (valueChanged)="onCodeChanged($event)">
-        </ngs-code-editor>
+        <textarea [(ngModel)]="text" (ngModelChange)="onCodeChanged($event)" rows="30" cols="140"></textarea>
       </mat-card-content>
     </mat-card>
   </mat-drawer-content>
