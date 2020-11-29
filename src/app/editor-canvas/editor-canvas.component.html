@@ -3,29 +3,7 @@
 <mat-drawer-container>
   <mat-drawer-content>
     <mat-card>
-      <mat-card-content>
-        <form>
-          <!--<mat-form-field>
-            <input type="text" placeholder="Select a command" matInput [formControl]="commandSelected"
-                   [matAutocomplete]="auto">
-            <mat-autocomplete #auto="matAutocomplete">
-              <mat-option *ngFor="let option of options" [value]="option" (onSelectionChange)="executeTransform($event)">
-                {{option}}
-              </mat-option>
-            </mat-autocomplete>
-          </mat-form-field>-->
-          <select [formControl]="commandSelected" (ngModelChange)="executeTransform()">
-            <ng-container *ngFor="let script of scriptOptions">
-              <option [value]="script">{{script}}</option>
-            </ng-container>
-          </select>
-        </form>
-        <br/>
-        Selected: {{commandSelected.value}}
-      </mat-card-content>
-    </mat-card>
-    <br/>
-    <mat-card>
+      <button mat-button (click)="openCommandDialog()">Open dialog</button>
       <mat-card-header>
         <mat-card-title>Editor</mat-card-title>
         <mat-card-subtitle>
@@ -51,6 +29,5 @@
     <app-history-sidebar></app-history-sidebar>
   </mat-drawer>
 </mat-drawer-container>
-
 
 <app-footer></app-footer>

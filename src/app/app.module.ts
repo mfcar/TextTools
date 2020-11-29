@@ -52,6 +52,7 @@ import {MatSliderModule} from '@angular/material/slider';
 import {MatBadgeModule} from '@angular/material/badge';
 import {MatBottomSheetModule} from '@angular/material/bottom-sheet';
 import {MatDialogModule} from '@angular/material/dialog';
+import { DialogSelectCommandComponent } from './dialog-select-command/dialog-select-command.component';
 
 @NgModule({
   declarations: [
@@ -59,7 +60,8 @@ import {MatDialogModule} from '@angular/material/dialog';
     HistorySidebarComponent,
     EditorCanvasComponent,
     FooterComponent,
-    HeaderComponent
+    HeaderComponent,
+    DialogSelectCommandComponent
   ],
   imports: [
     BrowserModule,
