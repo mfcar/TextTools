@@ -1,9 +1,9 @@
 <mat-toolbar color="primary">
   <mat-toolbar-row>
     <span>Text Tools</span>
-    <button mat-raised-button (click)="openCommandDialog()" >Open command list or Ctrl + Shift + A</button>
+    <button mat-raised-button (click)="openCommandDialog()" matTooltip="Show command palette">Open command list or Ctrl + Shift + A</button>
     <button mat-icon-button (click)="toggleHistorySidebar()" matTooltip="Show commands history">
-      <mat-icon class="example-icon" aria-hidden="false" aria-label="Example user verified icon">history</mat-icon>
+      <mat-icon class="example-icon" aria-hidden="false" aria-label="Show commands history">history</mat-icon>
     </button>
   </mat-toolbar-row>
 </mat-toolbar>

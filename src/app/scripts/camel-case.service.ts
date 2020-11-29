@@ -6,10 +6,6 @@ import * as lodash from 'lodash';
   providedIn: 'root'
 })
 export class CamelCaseService implements ScriptService {
-  name = 'Camel Case';
-  icon = 'title';
-  description = '';
-
   transform(text: string): string {
     return lodash.camelCase(text);
   }
