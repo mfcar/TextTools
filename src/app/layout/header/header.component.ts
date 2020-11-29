@@ -24,7 +24,7 @@ export class HeaderComponent {
     }, 300);
   }
 
-  @HostListener('document:keydown.shift.control.a')
+  @HostListener('document:keydown.shift.control.f')
   openCommandDialog(): void {
     const dialogRef = this.dialog.open(DialogCommandPaletteComponent, {
       width: '500px',
