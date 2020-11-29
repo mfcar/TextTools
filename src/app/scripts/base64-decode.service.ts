@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import {ScriptService} from './scriptService';
+import {IScript} from '../shared/IScript';
 
 @Injectable({
   providedIn: 'root'
 })
-export class Base64DecodeService implements ScriptService{
+export class Base64DecodeService implements IScript{
   transform(text: string): string {
     return atob(text);
   }

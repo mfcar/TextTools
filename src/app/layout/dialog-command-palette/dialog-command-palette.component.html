@@ -2,8 +2,8 @@
 <mat-dialog-content>
   <form class="command-form">
     <mat-form-field class="command-form-width">
-      <mat-label>Start typing...</mat-label>
-      <input matInput type="text" autocomplete="off" [formControl]="searchInput" name="command" cdkFocusInitial
+      <mat-label for="command">Start typing...</mat-label>
+      <input id="command" matInput type="text" autocomplete="off" [formControl]="searchInput" name="command"
              (ngModelChange)="filterCommands()">
     </mat-form-field>
   </form>

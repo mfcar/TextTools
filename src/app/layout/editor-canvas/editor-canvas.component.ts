@@ -1,9 +1,9 @@
 import {Component, Injector} from '@angular/core';
+import {ScriptsManagerService} from '../../services/scripts-manager.service';
+import {CommandHistoryManagerService} from '../../services/command-history-manager.service';
+import {IScript} from '../../shared/IScript';
+import {Command} from '../../shared/models';
 import * as lodash from 'lodash';
-import {ScriptManagerService} from '../script-manager.service';
-import {ScriptService} from '../scripts/scriptService';
-import {HistoryManagerService} from '../services/history-manager.service';
-import {Script} from '../models';
 
 @Component({
   selector: 'app-editor-canvas',
@@ -17,8 +17,8 @@ export class EditorCanvasComponent {
   commandsHistorySidebar = false;
   text = '';
 
-  constructor(private scriptManager: ScriptManagerService,
-              private historyManager: HistoryManagerService) {
+  constructor(private scriptManager: ScriptsManagerService,
+              private historyManager: CommandHistoryManagerService) {
     this.scriptOptions = this.scriptManager.list();
   }
 
@@ -33,10 +33,10 @@ export class EditorCanvasComponent {
   }
 
   executeTransform(event: any): void{
-    const script = event.result as Script;
+    const script = event.result as Command;
     const injector = Injector.create({providers: this.scriptManager.providerList()});
     const token: any = script.name;
-    const service = injector.get<ScriptService>(token);
+    const service = injector.get<IScript>(token);
     this.text = service.transform(this.text);
     this.historyManager.addToHistory(script);
   }

@@ -1,12 +1,12 @@
-import {CamelCaseService} from './scripts/camel-case.service';
-import {DeburrService} from './scripts/deburr.service';
-import {LowercaseService} from './scripts/lowercase.service';
-import {UppercaseService} from './scripts/uppercase.service';
-import {UrlDecodeService} from './scripts/url-decode.service';
-import {UrlEncodeService} from './scripts/url-encode.service';
-import {TrimService} from './scripts/trim.service';
-import {Base64EncodeService} from './scripts/base64-encode.service';
-import {Base64DecodeService} from './scripts/base64-decode.service';
+import {Base64EncodeService} from '../scripts/base64-encode.service';
+import {UrlEncodeService} from '../scripts/url-encode.service';
+import {Base64DecodeService} from '../scripts/base64-decode.service';
+import {LowercaseService} from '../scripts/lowercase.service';
+import {UrlDecodeService} from '../scripts/url-decode.service';
+import {UppercaseService} from '../scripts/uppercase.service';
+import {CamelCaseService} from '../scripts/camel-case.service';
+import {DeburrService} from '../scripts/deburr.service';
+import {TrimService} from '../scripts/trim.service';
 
 export class ScriptList {
   static scripts =

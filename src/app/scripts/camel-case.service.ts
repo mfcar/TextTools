@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import {ScriptService} from './scriptService';
+import {IScript} from '../shared/IScript';
 import * as lodash from 'lodash';
 
 @Injectable({
   providedIn: 'root'
 })
-export class CamelCaseService implements ScriptService {
+export class CamelCaseService implements IScript {
   transform(text: string): string {
     return lodash.camelCase(text);
   }

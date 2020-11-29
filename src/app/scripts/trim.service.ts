@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import {ScriptService} from './scriptService';
+import {IScript} from '../shared/IScript';
 
 @Injectable({
   providedIn: 'root'
 })
-export class TrimService implements ScriptService {
+export class TrimService implements IScript {
   transform(text: string): string {
     return text.trim();
   }

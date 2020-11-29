@@ -1,7 +1,6 @@
 import {Component, EventEmitter, HostListener, Output} from '@angular/core';
-import {DialogSelectCommandComponent} from '../../../dialog-select-command/dialog-select-command.component';
-import {Script} from '../../../models';
 import {MatDialog} from '@angular/material/dialog';
+import {DialogCommandPaletteComponent} from '../dialog-command-palette/dialog-command-palette.component';
 
 @Component({
   selector: 'app-header',
@@ -27,7 +26,7 @@ export class HeaderComponent {
 
   @HostListener('document:keydown.shift.control.a')
   openCommandDialog(): void {
-    const dialogRef = this.dialog.open(DialogSelectCommandComponent, {
+    const dialogRef = this.dialog.open(DialogCommandPaletteComponent, {
       width: '500px',
       height: '470px'
     });

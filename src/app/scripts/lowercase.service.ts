@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import {ScriptService} from './scriptService';
+import {IScript} from '../shared/IScript';
 
 @Injectable({
   providedIn: 'root'
 })
-export class LowercaseService implements ScriptService {
+export class LowercaseService implements IScript {
   transform(text: string): string {
     return text.toLowerCase();
   }

@@ -1,15 +1,15 @@
 import {Type} from '@angular/core';
-import {ScriptService} from './scripts/scriptService';
+import {IScript} from './IScript';
 
-export interface Script {
+export interface Command {
   name: string;
   icon?: string;
   description?: string;
   author?: string;
-  class: Type<ScriptService>;
+  class: Type<IScript>;
 }
 
-export interface History {
+export interface CommandHistory {
   step: number;
   commandName: string;
   commandIcon: string;
