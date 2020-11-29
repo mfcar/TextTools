@@ -1,7 +1,8 @@
-import {Component, ReflectiveInjector} from '@angular/core';
+import {Component, Injector} from '@angular/core';
 import * as lodash from 'lodash';
 import {FormControl} from '@angular/forms';
 import {ScriptManagerService} from '../script-manager.service';
+import {ScriptService} from '../scripts/scriptService';
 
 export interface User {
   name: string;
@@ -35,10 +36,9 @@ export class EditorCanvasComponent {
   }
 
   executeTransform(): void {
-    const injector = ReflectiveInjector.resolveAndCreate(
-      this.scriptManager.providerList()
-    );
-    const service = injector.get(this.commandSelected.value);
+    const injector = Injector.create({providers: this.scriptManager.providerList()});
+
+    const service = injector.get<ScriptService>(this.commandSelected.value);
     this.text = service.transform(this.text);
   }
 }
