@@ -1,8 +1,7 @@
-import {Component, ReflectiveInjector, Injector } from '@angular/core';
+import {Component, ReflectiveInjector} from '@angular/core';
 import * as lodash from 'lodash';
 import {FormControl} from '@angular/forms';
-import {LowercaseService} from '../scripts/lowercase.service';
-import {UppercaseService} from '../scripts/uppercase.service';
+import {ScriptManagerService} from '../script-manager.service';
 
 export interface User {
   name: string;
@@ -15,11 +14,15 @@ export interface User {
 })
 export class EditorCanvasComponent {
   commandSelected = new FormControl();
-  scriptOptions: string[] = ['Lowercase', 'Uppercase'];
+  scriptOptions: string[];
   linesNumber = 0;
   characterCount = 0;
   commandsHistorySidebar = false;
   text = '';
+
+  constructor(private scriptManager: ScriptManagerService) {
+    this.scriptOptions = this.scriptManager.list();
+  }
 
   commandHistorySidebarToggler(): void {
     this.commandsHistorySidebar = !this.commandsHistorySidebar;
@@ -32,10 +35,9 @@ export class EditorCanvasComponent {
   }
 
   executeTransform(): void {
-    const injector = ReflectiveInjector.resolveAndCreate([
-      { provide: 'Lowercase', useClass: LowercaseService },
-      { provide: 'Uppercase', useClass: UppercaseService}
-    ]);
+    const injector = ReflectiveInjector.resolveAndCreate(
+      this.scriptManager.providerList()
+    );
     const service = injector.get(this.commandSelected.value);
     this.text = service.transform(this.text);
   }
