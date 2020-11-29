@@ -10,25 +10,25 @@ export class ScriptList {
     [
       {
         name: 'CamelCase',
-        icon: 'title',
+        icon: 'text_format',
         description: 'Convert all text to CamelCase',
         class: CamelCaseService
       },
       {
         name: 'Deburr',
-        icon: 'title',
+        icon: 'text_format',
         description: 'Remove special characters',
         class: DeburrService
       },
       {
         name: 'Lowercase',
-        icon: 'title',
+        icon: 'text_format',
         description: 'Convert all text to Lowercase',
         class: LowercaseService
       },
       {
         name: 'Uppercase',
-        icon: 'title',
+        icon: 'text_format',
         description: 'Convert all text to Uppercase',
         class: UppercaseService
       },
@@ -42,6 +42,12 @@ export class ScriptList {
         name: 'URLEncode',
         icon: 'insert_link',
         description: 'Decode special characters',
+        class: UrlEncodeService
+      },
+      {
+        name: 'Trim',
+        icon: 'content_cut',
+        description: 'Remove whitespace from both sides',
         class: UrlEncodeService
       }
     ];
