@@ -2,6 +2,10 @@ import {Injectable, StaticProvider, Type} from '@angular/core';
 import {LowercaseService} from './scripts/lowercase.service';
 import {UppercaseService} from './scripts/uppercase.service';
 import {ScriptService} from './scripts/scriptService';
+import {UrlDecodeService} from './scripts/url-decode.service';
+import {UrlEncodeService} from './scripts/url-encode.service';
+import {CamelCaseService} from './scripts/camel-case.service';
+import {DeburrService} from './scripts/deburr.service';
 
 interface Script {
   name: string;
@@ -14,8 +18,12 @@ interface Script {
 export class ScriptManagerService {
 
   scriptList: Script[] = [
+    {name: 'CamelCase', class: CamelCaseService},
+    {name: 'Deburr', class: DeburrService},
     {name: 'Lowercase', class: LowercaseService},
-    {name: 'Uppercase', class: UppercaseService}
+    {name: 'Uppercase', class: UppercaseService},
+    {name: 'URLDecode', class: UrlDecodeService},
+    {name: 'URLEncode', class: UrlEncodeService}
   ];
 
   constructor() {
