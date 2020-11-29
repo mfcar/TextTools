@@ -13,12 +13,12 @@ import {Script} from './models';
 export class ScriptManagerService {
 
   scriptList: Script[] = [
-    {name: 'CamelCase', class: CamelCaseService},
-    {name: 'Deburr', class: DeburrService},
-    {name: 'Lowercase', class: LowercaseService},
-    {name: 'Uppercase', class: UppercaseService},
-    {name: 'URLDecode', class: UrlDecodeService},
-    {name: 'URLEncode', class: UrlEncodeService}
+    {name: 'CamelCase', icon: 'title', class: CamelCaseService},
+    {name: 'Deburr', icon: 'title', class: DeburrService},
+    {name: 'Lowercase', icon: 'title', class: LowercaseService},
+    {name: 'Uppercase', icon: 'title', class: UppercaseService},
+    {name: 'URLDecode', icon: 'insert_link', class: UrlDecodeService},
+    {name: 'URLEncode', icon: 'insert_link', class: UrlEncodeService}
   ];
 
   public list(): string[] {

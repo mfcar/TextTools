@@ -6,8 +6,9 @@ import * as lodash from 'lodash';
   providedIn: 'root'
 })
 export class DeburrService implements ScriptService {
-
-  constructor() { }
+  description = '';
+  icon = 'title';
+  name = 'Deburr';
 
   transform(text: string): string {
     return lodash.deburr(text);

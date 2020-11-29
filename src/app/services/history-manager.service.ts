@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {History} from '../models';
+import {History, Script} from '../models';
 
 @Injectable({
   providedIn: 'root'
@@ -7,9 +7,10 @@ import {History} from '../models';
 export class HistoryManagerService {
   actualHistory: History[] = [];
 
-  addToHistory(commandName: string): void {
+  addToHistory(script: Script): void {
     const history = {
-      commandName,
+      commandName: script.name,
+      commandIcon: script.icon,
       date: new Date(),
       step: this.getLastStepNumber()
     } as History;

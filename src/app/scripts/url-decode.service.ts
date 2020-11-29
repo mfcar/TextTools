@@ -5,8 +5,9 @@ import {ScriptService} from './scriptService';
   providedIn: 'root'
 })
 export class UrlDecodeService implements ScriptService {
-
-  constructor() { }
+  description = '';
+  icon = 'insert-link';
+  name = 'URL Decode';
 
   transform(text: string): string {
     return decodeURIComponent(text);

@@ -3,14 +3,14 @@
   <form class="command-form">
     <mat-form-field class="command-form-width">
       <mat-label>Start typing...</mat-label>
-      <input matInput type="text" [(ngModel)]="command" name="command" cdkFocusInitial>
+      <input matInput type="text" autocomplete="off" [formControl]="searchInput" name="command" cdkFocusInitial
+             (ngModelChange)="filterCommands()">
     </mat-form-field>
   </form>
   <mat-nav-list>
-    <mat-list-item *ngFor="let script of scriptList" (click)="commandSelected(script)">
-      <mat-icon mat-list-icon>code</mat-icon>
+    <mat-list-item *ngFor="let script of filteredScript" (click)="commandSelected(script)">
+      <mat-icon mat-list-icon>{{script.icon}}</mat-icon>
       <div mat-line>{{script.name}}</div>
-      <div mat-line>aaa</div>
       <div mat-line *ngIf="script.description">{{script.description}}</div>
     </mat-list-item>
   </mat-nav-list>

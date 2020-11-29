@@ -1,9 +1,8 @@
-<app-header (toggleHistorySidebarEvent)="commandHistorySidebarToggle()"></app-header>
+<app-header (toggleHistorySidebarEvent)="commandHistorySidebarToggle()" (executeCommandEvent)="executeTransform($event)"></app-header>
 
 <mat-drawer-container>
   <mat-drawer-content>
     <mat-card>
-      <button mat-button (click)="openCommandDialog()">Open dialog</button>
       <mat-card-header>
         <mat-card-title>Editor</mat-card-title>
         <mat-card-subtitle>
