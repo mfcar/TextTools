@@ -20,6 +20,8 @@ import {MatCardModule} from '@angular/material/card';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatButtonModule} from '@angular/material/button';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
+import { DialogCommandParametersComponent } from './layout/dialog-command-parameters/dialog-command-parameters.component';
+import { SidebarCommandsComponent } from './layout/sidebar-commands/sidebar-commands.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +30,9 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
     FooterComponent,
     SidebarHistoryComponent,
     DialogCommandPaletteComponent,
-    EditorCanvasComponent
+    EditorCanvasComponent,
+    DialogCommandParametersComponent,
+    SidebarCommandsComponent
   ],
   imports: [
     BrowserModule,
