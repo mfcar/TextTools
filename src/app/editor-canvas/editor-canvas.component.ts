@@ -3,6 +3,7 @@ import * as lodash from 'lodash';
 import {FormControl} from '@angular/forms';
 import {ScriptManagerService} from '../script-manager.service';
 import {ScriptService} from '../scripts/scriptService';
+import {HistoryManagerService} from '../services/history-manager.service';
 
 export interface User {
   name: string;
@@ -21,11 +22,12 @@ export class EditorCanvasComponent {
   commandsHistorySidebar = false;
   text = '';
 
-  constructor(private scriptManager: ScriptManagerService) {
+  constructor(private scriptManager: ScriptManagerService,
+              private historyManager: HistoryManagerService) {
     this.scriptOptions = this.scriptManager.list();
   }
 
-  commandHistorySidebarToggler(): void {
+  commandHistorySidebarToggle(): void {
     this.commandsHistorySidebar = !this.commandsHistorySidebar;
   }
 
@@ -40,5 +42,6 @@ export class EditorCanvasComponent {
 
     const service = injector.get<ScriptService>(this.commandSelected.value);
     this.text = service.transform(this.text);
+    this.historyManager.addToHistory(this.commandSelected.value);
   }
 }

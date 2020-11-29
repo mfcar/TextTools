@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import {HistoryManagerService} from '../services/history-manager.service';
+import {History} from '../models';
 
 @Component({
   selector: 'app-history-sidebar',
@@ -6,10 +8,12 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./history-sidebar.component.scss']
 })
 export class HistorySidebarComponent implements OnInit {
+  historyCommandList: History[] = [];
 
-  constructor() { }
+  constructor(private historyManager: HistoryManagerService) { }
 
   ngOnInit(): void {
+    this.historyCommandList = this.historyManager.returnHistory();
   }
 
 }

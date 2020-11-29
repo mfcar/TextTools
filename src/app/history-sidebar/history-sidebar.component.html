@@ -1,2 +1,9 @@
 <h2>Command history</h2>
-Command 1
+<ng-container *ngFor="let history of historyCommandList.reverse()">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>{{history.step}} - {{history.commandName}}</mat-card-title>
+      <mat-card-subtitle>{{history.date | date:'mediumTime'}}</mat-card-subtitle>
+    </mat-card-header>
+  </mat-card>
+</ng-container>
