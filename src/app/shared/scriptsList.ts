@@ -9,6 +9,7 @@ import {DeburrService} from '../scripts/deburr.service';
 import {TrimService} from '../scripts/trim.service';
 import {Command, CommandParameter, ParameterType} from './models';
 import {SplitService} from '../scripts/split.service';
+import {MinifyJSONService} from '../scripts/minify-json.service';
 
 export class ScriptList {
   static scripts =
@@ -52,6 +53,12 @@ export class ScriptList {
         icon: 'text_format',
         description: 'Convert all text to Lowercase',
         class: LowercaseService
+      },
+      {
+        name: 'Minify JSON',
+        icon: 'cleaning_services',
+        description: 'Minify JSON document',
+        class: MinifyJSONService
       },
       {
         name: 'Uppercase',
