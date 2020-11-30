@@ -11,6 +11,7 @@ import {Command, CommandParameter, ParameterType} from './models';
 import {SplitService} from '../scripts/split.service';
 import {MinifyJSONService} from '../scripts/minify-json.service';
 import {EscapeService} from '../scripts/escape.service';
+import {KebabCaseService} from '../scripts/kebab-case.service';
 
 export class ScriptList {
   static scripts =
@@ -38,9 +39,9 @@ export class ScriptList {
         class: Base64DecodeService
       },
       {
-        name: 'CamelCase',
+        name: 'Camel Case',
         icon: 'text_format',
-        description: 'Convert all text to CamelCase',
+        description: 'Convert all text to Camel Case',
         class: CamelCaseService
       },
       {
@@ -60,6 +61,12 @@ export class ScriptList {
         icon: 'text_format',
         description: 'Convert all text to Lowercase',
         class: LowercaseService
+      },
+      {
+        name: 'Kebab Case',
+        icon: 'text_format',
+        description: 'Convert all text to Kebab Case',
+        class: KebabCaseService
       },
       {
         name: 'Minify JSON',
