@@ -33,7 +33,6 @@ export class HeaderComponent {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        // this.executeTransform(result as Script);
         this.executeCommandEvent.emit({result});
       }
     });

@@ -4,6 +4,8 @@ import {Command} from '../../shared/models';
 import {FormControl} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {ScriptsManagerService} from '../../services/scripts-manager.service';
+import {MatBottomSheet} from '@angular/material/bottom-sheet';
+import {DialogCommandParametersComponent} from '../dialog-command-parameters/dialog-command-parameters.component';
 
 @Component({
   selector: 'app-dialog-command-palette',
@@ -19,7 +21,8 @@ export class DialogCommandPaletteComponent implements OnInit {
   constructor(
     private scriptManager: ScriptsManagerService,
     public dialogRef: MatDialogRef<DialogCommandPaletteComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: Command
+    @Inject(MAT_DIALOG_DATA) public data: Command,
+    private bottomSheet: MatBottomSheet
   ) {
   }
 
@@ -28,15 +31,28 @@ export class DialogCommandPaletteComponent implements OnInit {
     this.filteredScript = this.scriptManager.scriptList;
   }
 
-  commandSelected(command: Command): void {
-    this.dialogRef.close(command);
-  }
-
   filterCommands(): void {
     const term = lodash.deburr(this.searchInput.value).toLowerCase();
     this.filteredScript = this.commandList.filter(script => {
       return lodash.deburr(script.name).toLowerCase().includes(term) ||
         lodash.deburr(script.description).toLowerCase().includes(term);
     });
+  }
+
+  commandSelected(command: Command): void {
+    if (command.parameters && command.parameters.length > 0) {
+      const bottomRef = this.bottomSheet.open(DialogCommandParametersComponent, {
+        data: command.parameters
+      });
+
+      bottomRef.afterDismissed().subscribe(result => {
+        if (result) {
+          command.parametersValue = result;
+          this.dialogRef.close(command);
+        }
+      });
+    } else {
+      this.dialogRef.close(command);
+    }
   }
 }

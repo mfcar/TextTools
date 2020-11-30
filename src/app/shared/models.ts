@@ -7,6 +7,15 @@ export interface Command {
   description?: string;
   author?: string;
   class: Type<IScript>;
+  parameters?: CommandParameter[];
+  parametersValue: any[];
+}
+
+export interface CommandParameter {
+  index: number;
+  name: string;
+  type: ParameterType;
+  defaultValue: any;
 }
 
 export interface CommandHistory {
@@ -14,4 +23,9 @@ export interface CommandHistory {
   commandName: string;
   commandIcon: string;
   date: Date;
+}
+
+export enum ParameterType {
+  text,
+  number
 }

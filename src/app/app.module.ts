@@ -22,6 +22,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import { DialogCommandParametersComponent } from './layout/dialog-command-parameters/dialog-command-parameters.component';
 import { SidebarCommandsComponent } from './layout/sidebar-commands/sidebar-commands.component';
+import {MatBottomSheetModule} from '@angular/material/bottom-sheet';
 
 @NgModule({
   declarations: [
@@ -49,7 +50,8 @@ import { SidebarCommandsComponent } from './layout/sidebar-commands/sidebar-comm
     MatCardModule,
     MatSidenavModule,
     MatButtonModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatBottomSheetModule
   ],
   providers: [],
   bootstrap: [AppComponent]

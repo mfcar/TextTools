@@ -32,12 +32,12 @@ export class EditorCanvasComponent {
     this.characterCount = lodash.size(this.text);
   }
 
-  executeTransform(event: any): void{
+  executeTransform(event: any): void {
     const script = event.result as Command;
     const injector = Injector.create({providers: this.scriptManager.providerList()});
     const token: any = script.name;
     const service = injector.get<IScript>(token);
-    this.text = service.transform(this.text);
+    this.text = service.transform(this.text, script.parametersValue);
     this.historyManager.addToHistory(script);
   }
 }

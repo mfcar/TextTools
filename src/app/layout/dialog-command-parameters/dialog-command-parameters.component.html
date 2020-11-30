@@ -1,1 +1,14 @@
-<p>dialog-command-parameters works!</p>
+<ng-container *ngIf="formParameters">
+  <form [formGroup]="formParameters">
+    <ng-container *ngFor="let parameter of data">
+      <mat-form-field>
+        <mat-label>{{parameter.name}}</mat-label>
+        <input [type]="parameter.type.toString()" matInput [formControlName]="parameter.name">
+      </mat-form-field>
+    </ng-container>
+  </form>
+  <mat-action-list>
+    <button mat-list-item (click)="executeCommand($event)">Execute</button>
+    <button mat-list-item (click)="dismiss($event)">Cancel</button>
+  </mat-action-list>
+</ng-container>
