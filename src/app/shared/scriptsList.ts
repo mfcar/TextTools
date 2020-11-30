@@ -13,20 +13,11 @@ import {MinifyJSONService} from '../scripts/minify-json.service';
 import {EscapeService} from '../scripts/escape.service';
 import {KebabCaseService} from '../scripts/kebab-case.service';
 import {SnakeCaseService} from '../scripts/snake-case.service';
+import {RepeatService} from '../scripts/repeat.service';
 
 export class ScriptList {
   static scripts =
     [
-      {
-        name: 'Split',
-        icon: 'call_split',
-        description: 'Divide a string',
-        class: SplitService,
-        parameters: [
-          { index: 1, name: 'separator', type: ParameterType.text, defaultValue: '-'},
-          { index: 2, name: 'limit', type: ParameterType.number, defaultValue: 2}
-        ] as CommandParameter[]
-      },
       {
         name: 'Base64 Encode',
         icon: 'security',
@@ -74,6 +65,25 @@ export class ScriptList {
         icon: 'cleaning_services',
         description: 'Minify JSON document',
         class: MinifyJSONService
+      },
+      {
+        name: 'Repeat',
+        icon: 'repeat',
+        description: 'Repeat the string n times',
+        class: RepeatService,
+        parameters: [
+          { index: 1, name: 'n', type: ParameterType.number, defaultValue: '3'},
+        ] as CommandParameter[]
+      },
+      {
+        name: 'Split',
+        icon: 'call_split',
+        description: 'Divide a string',
+        class: SplitService,
+        parameters: [
+          { index: 1, name: 'separator', type: ParameterType.text, defaultValue: '-'},
+          { index: 2, name: 'limit', type: ParameterType.number, defaultValue: 2}
+        ] as CommandParameter[]
       },
       {
         name: 'Snake Case',
