@@ -7,10 +7,22 @@ import {UppercaseService} from '../scripts/uppercase.service';
 import {CamelCaseService} from '../scripts/camel-case.service';
 import {DeburrService} from '../scripts/deburr.service';
 import {TrimService} from '../scripts/trim.service';
+import {Command, CommandParameter, ParameterType} from './models';
+import {SplitService} from '../scripts/split.service';
 
 export class ScriptList {
   static scripts =
     [
+      {
+        name: 'Split',
+        icon: 'call_split',
+        description: 'Divide a string',
+        class: SplitService,
+        parameters: [
+          { index: 1, name: 'separator', type: ParameterType.text, defaultValue: '-'},
+          { index: 2, name: 'limit', type: ParameterType.number, defaultValue: 2}
+        ] as CommandParameter[]
+      },
       {
         name: 'Base64 Encode',
         icon: 'security',
@@ -65,5 +77,5 @@ export class ScriptList {
         description: 'Remove whitespace from both sides',
         class: TrimService
       }
-    ];
+    ] as Command[];
 }
