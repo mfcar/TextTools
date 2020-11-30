@@ -12,6 +12,7 @@ import {SplitService} from '../scripts/split.service';
 import {MinifyJSONService} from '../scripts/minify-json.service';
 import {EscapeService} from '../scripts/escape.service';
 import {KebabCaseService} from '../scripts/kebab-case.service';
+import {SnakeCaseService} from '../scripts/snake-case.service';
 
 export class ScriptList {
   static scripts =
@@ -73,6 +74,12 @@ export class ScriptList {
         icon: 'cleaning_services',
         description: 'Minify JSON document',
         class: MinifyJSONService
+      },
+      {
+        name: 'Snake Case',
+        icon: 'text_format',
+        description: 'Convert all text to Snake Case',
+        class: SnakeCaseService
       },
       {
         name: 'Uppercase',
