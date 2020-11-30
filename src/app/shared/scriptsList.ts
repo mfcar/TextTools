@@ -10,6 +10,7 @@ import {TrimService} from '../scripts/trim.service';
 import {Command, CommandParameter, ParameterType} from './models';
 import {SplitService} from '../scripts/split.service';
 import {MinifyJSONService} from '../scripts/minify-json.service';
+import {EscapeService} from '../scripts/escape.service';
 
 export class ScriptList {
   static scripts =
@@ -47,6 +48,12 @@ export class ScriptList {
         icon: 'text_format',
         description: 'Remove special characters',
         class: DeburrService
+      },
+      {
+        name: 'Escape',
+        icon: 'text_format',
+        description: 'Converts characters in string to their corresponding HTML entities.',
+        class: EscapeService
       },
       {
         name: 'Lowercase',
