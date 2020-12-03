@@ -23,7 +23,6 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
 import { DialogCommandParametersComponent } from './layout/dialog-command-parameters/dialog-command-parameters.component';
 import { SidebarCommandsComponent } from './layout/sidebar-commands/sidebar-commands.component';
 import {MatBottomSheetModule} from '@angular/material/bottom-sheet';
-import {NgxGoogleAnalyticsModule} from 'ngx-google-analytics';
 
 @NgModule({
   declarations: [
@@ -52,8 +51,7 @@ import {NgxGoogleAnalyticsModule} from 'ngx-google-analytics';
     MatSidenavModule,
     MatButtonModule,
     MatSnackBarModule,
-    MatBottomSheetModule,
-    NgxGoogleAnalyticsModule.forRoot('UA-38960196-1')
+    MatBottomSheetModule
   ],
   providers: [],
   bootstrap: [AppComponent]
