@@ -4,6 +4,7 @@ import {CommandHistoryManagerService} from '../../services/command-history-manag
 import {IScript} from '../../shared/IScript';
 import {Command} from '../../shared/models';
 import * as lodash from 'lodash';
+import * as FileSaver from 'file-saver';
 
 @Component({
   selector: 'app-editor-canvas',
@@ -39,5 +40,10 @@ export class EditorCanvasComponent {
     const service = injector.get<IScript>(token);
     this.text = service.transform(this.text, script.parametersValue);
     this.historyManager.addToHistory(script);
+  }
+
+  downloadFile(): void {
+    const blob = new Blob([this.text], {type: 'text/plain;charset=utf-8'});
+    FileSaver.saveAs(blob, 'text.txt');
   }
 }
