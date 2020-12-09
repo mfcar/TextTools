@@ -18,6 +18,7 @@ import {UTF8DecodeService} from '../scripts/utf8-decode.service';
 import {UTF8EncodeService} from '../scripts/utf8-encode.service';
 import {SortLinesAscService} from '../scripts/sort-lines-asc.service';
 import {SortLinesDescService} from '../scripts/sort-lines-desc.service';
+import {TextReverseService} from '../scripts/text-reverse.service';
 
 export class ScriptList {
   static scripts =
@@ -124,6 +125,12 @@ export class ScriptList {
         icon: 'insert_link',
         description: 'Decode special characters',
         class: UrlEncodeService
+      },
+      {
+        name: 'Text Reverser',
+        icon: 'reorder',
+        description: 'Reverse a text',
+        class: TextReverseService
       },
       {
         name: 'Trim',
