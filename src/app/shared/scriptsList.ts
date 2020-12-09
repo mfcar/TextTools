@@ -14,6 +14,8 @@ import {EscapeService} from '../scripts/escape.service';
 import {KebabCaseService} from '../scripts/kebab-case.service';
 import {SnakeCaseService} from '../scripts/snake-case.service';
 import {RepeatService} from '../scripts/repeat.service';
+import {UTF8DecodeService} from '../scripts/utf8-decode.service';
+import {UTF8EncodeService} from '../scripts/utf8-encode.service';
 
 export class ScriptList {
   static scripts =
@@ -114,6 +116,18 @@ export class ScriptList {
         icon: 'content_cut',
         description: 'Remove whitespace from both sides',
         class: TrimService
+      },
+      {
+        name: 'UTF8 Encode',
+        icon: 'sync_alt',
+        description: 'Encode to UTF-8',
+        class: UTF8EncodeService
+      },
+      {
+        name: 'UTF8 Decode',
+        icon: 'sync_alt',
+        description: 'Decode UTF-8',
+        class: UTF8DecodeService
       }
     ] as Command[];
 }
