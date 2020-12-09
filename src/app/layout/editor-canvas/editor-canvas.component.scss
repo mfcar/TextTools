@@ -5,7 +5,7 @@
 }
 
 mat-drawer {
-  width: 350px;
+  width: 320px;
 }
 
 mat-drawer-container {
@@ -22,4 +22,8 @@ mat-drawer-content {
 
 #monacoEditor {
   height: 95%;
+}
+
+.mat-card-content textarea {
+	width: 100%;
 }
