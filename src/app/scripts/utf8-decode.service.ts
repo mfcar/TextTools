@@ -6,6 +6,6 @@ import {IScript} from '../shared/IScript';
 })
 export class UTF8DecodeService implements IScript {
   transform(text: string): string {
-    return decodeURIComponent( escape( text ) );
+    return decodeURIComponent(escape(text));
   }
 }
