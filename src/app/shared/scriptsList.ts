@@ -16,6 +16,8 @@ import {SnakeCaseService} from '../scripts/snake-case.service';
 import {RepeatService} from '../scripts/repeat.service';
 import {UTF8DecodeService} from '../scripts/utf8-decode.service';
 import {UTF8EncodeService} from '../scripts/utf8-encode.service';
+import {SortLinesAscService} from '../scripts/sort-lines-asc.service';
+import {SortLinesDescService} from '../scripts/sort-lines-desc.service';
 
 export class ScriptList {
   static scripts =
@@ -92,6 +94,18 @@ export class ScriptList {
         icon: 'text_format',
         description: 'Convert all text to Snake Case',
         class: SnakeCaseService
+      },
+      {
+        name: 'Sort Lines Asc',
+        icon: 'sort_by_alpha',
+        description: 'Sort Lines Asc',
+        class: SortLinesAscService
+      },
+      {
+        name: 'Sort Lines Desc',
+        icon: 'sort_by_alpha',
+        description: 'Sort Lines Desc',
+        class: SortLinesDescService
       },
       {
         name: 'Uppercase',
