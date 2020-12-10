@@ -1,3 +1,4 @@
+import {Command, CommandParameter, ParameterType} from './models';
 import {Base64EncodeService} from '../scripts/base64-encode.service';
 import {UrlEncodeService} from '../scripts/url-encode.service';
 import {Base64DecodeService} from '../scripts/base64-decode.service';
@@ -7,7 +8,6 @@ import {UppercaseService} from '../scripts/uppercase.service';
 import {CamelCaseService} from '../scripts/camel-case.service';
 import {DeburrService} from '../scripts/deburr.service';
 import {TrimService} from '../scripts/trim.service';
-import {Command, CommandParameter, ParameterType} from './models';
 import {SplitService} from '../scripts/split.service';
 import {MinifyJSONService} from '../scripts/minify-json.service';
 import {EscapeService} from '../scripts/escape.service';
@@ -21,6 +21,8 @@ import {SortLinesDescService} from '../scripts/sort-lines-desc.service';
 import {TextReverseService} from '../scripts/text-reverse.service';
 import {HexadecimalEncodeService} from '../scripts/hexadecimal-encode.service';
 import {HexadecimalDecodeService} from '../scripts/hexadecimal-decode.service';
+import {BinaryEncodeService} from '../scripts/binary-encode.service';
+import {BinaryDecodeService} from '../scripts/binary-decode.service';
 
 export class ScriptList {
   static scripts =
@@ -36,6 +38,18 @@ export class ScriptList {
         icon: 'security',
         description: 'Decodes a base64 encoded string',
         class: Base64DecodeService
+      },
+      {
+        name: 'Binary Encode',
+        icon: 'security',
+        description: 'Creates a binary encoded from string',
+        class: BinaryEncodeService
+      },
+      {
+        name: 'Binary Decode',
+        icon: 'security',
+        description: 'Decodes a binary encoded string',
+        class: BinaryDecodeService
       },
       {
         name: 'Camel Case',
@@ -91,7 +105,7 @@ export class ScriptList {
         description: 'Repeat the string n times',
         class: RepeatService,
         parameters: [
-          { index: 1, name: 'n', type: ParameterType.number, defaultValue: '3'},
+          {index: 1, name: 'n', type: ParameterType.number, defaultValue: '3'},
         ] as CommandParameter[]
       },
       {
@@ -100,8 +114,8 @@ export class ScriptList {
         description: 'Divide a string',
         class: SplitService,
         parameters: [
-          { index: 1, name: 'separator', type: ParameterType.text, defaultValue: '-'},
-          { index: 2, name: 'limit', type: ParameterType.number, defaultValue: 2}
+          {index: 1, name: 'separator', type: ParameterType.text, defaultValue: '-'},
+          {index: 2, name: 'limit', type: ParameterType.number, defaultValue: 2}
         ] as CommandParameter[]
       },
       {
