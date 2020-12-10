@@ -17,7 +17,6 @@ export class BinaryEncodeService implements IScript {
   }
 
   transform(text: string): string {
-
     let e: number;
     let a: number;
     const t = text;
