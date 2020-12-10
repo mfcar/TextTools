@@ -19,6 +19,8 @@ import {UTF8EncodeService} from '../scripts/utf8-encode.service';
 import {SortLinesAscService} from '../scripts/sort-lines-asc.service';
 import {SortLinesDescService} from '../scripts/sort-lines-desc.service';
 import {TextReverseService} from '../scripts/text-reverse.service';
+import {HexadecimalEncodeService} from '../scripts/hexadecimal-encode.service';
+import {HexadecimalDecodeService} from '../scripts/hexadecimal-decode.service';
 
 export class ScriptList {
   static scripts =
@@ -52,6 +54,18 @@ export class ScriptList {
         icon: 'text_format',
         description: 'Converts characters in string to their corresponding HTML entities.',
         class: EscapeService
+      },
+      {
+        name: 'Hexadecimal Encode',
+        icon: 'security',
+        description: 'Creates a hexadecimal encoded from string.',
+        class: HexadecimalEncodeService
+      },
+      {
+        name: 'Hexadecimal Decode',
+        icon: 'security',
+        description: 'Decodes a hexadecimal encoded string.',
+        class: HexadecimalDecodeService
       },
       {
         name: 'Lowercase',
