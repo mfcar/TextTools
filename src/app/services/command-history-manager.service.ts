@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Command, CommandHistory} from '../shared/models';
 
 @Injectable({
@@ -27,5 +27,9 @@ export class CommandHistoryManagerService {
     }
 
     return this.returnHistory().length;
+  }
+
+  clearHistory(): void {
+    this.actualHistory = [];
   }
 }

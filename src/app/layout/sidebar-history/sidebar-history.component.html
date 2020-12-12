@@ -6,6 +6,9 @@
       <div mat-line>{{history.commandName}}</div>
       <div mat-line> {{history.date | date:'mediumTime'}} </div>
     </mat-list-item>
+    <mat-list-item>
+      <button mat-raised-button color="accent" (click)="clearHistory()">Clear history</button>
+    </mat-list-item>
   </ng-container>
   <ng-template #noCommandYet>
     <mat-list-item>

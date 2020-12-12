@@ -17,4 +17,8 @@ export class SidebarHistoryComponent implements OnInit {
     this.historyCommandList = this.historyManager.returnHistory();
   }
 
+  clearHistory(): void {
+    this.historyManager.clearHistory();
+  }
+
 }
