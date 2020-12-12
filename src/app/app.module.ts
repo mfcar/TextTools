@@ -23,6 +23,7 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
 import { DialogCommandParametersComponent } from './layout/dialog-command-parameters/dialog-command-parameters.component';
 import { SidebarCommandsComponent } from './layout/sidebar-commands/sidebar-commands.component';
 import {MatBottomSheetModule} from '@angular/material/bottom-sheet';
+import { DialogDownloadFileComponent } from './layout/dialog-download-file/dialog-download-file.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import {MatBottomSheetModule} from '@angular/material/bottom-sheet';
     DialogCommandPaletteComponent,
     EditorCanvasComponent,
     DialogCommandParametersComponent,
-    SidebarCommandsComponent
+    SidebarCommandsComponent,
+    DialogDownloadFileComponent
   ],
   imports: [
     BrowserModule,

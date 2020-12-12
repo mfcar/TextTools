@@ -1,10 +1,11 @@
-import {Component, Injector} from '@angular/core';
+import {Component, Inject, Injector} from '@angular/core';
 import {ScriptsManagerService} from '../../services/scripts-manager.service';
 import {CommandHistoryManagerService} from '../../services/command-history-manager.service';
 import {IScript} from '../../shared/IScript';
 import {Command} from '../../shared/models';
 import * as lodash from 'lodash';
-import * as FileSaver from 'file-saver';
+import {MatDialog} from '@angular/material/dialog';
+import {DialogDownloadFileComponent} from '../dialog-download-file/dialog-download-file.component';
 
 @Component({
   selector: 'app-editor-canvas',
@@ -19,7 +20,8 @@ export class EditorCanvasComponent {
   text = '';
 
   constructor(private scriptManager: ScriptsManagerService,
-              private historyManager: CommandHistoryManagerService) {
+              private historyManager: CommandHistoryManagerService,
+              public dialog: MatDialog) {
     this.scriptOptions = this.scriptManager.list();
   }
 
@@ -42,8 +44,10 @@ export class EditorCanvasComponent {
     this.historyManager.addToHistory(script);
   }
 
-  downloadFile(): void {
-    const blob = new Blob([this.text], {type: 'text/plain;charset=utf-8'});
-    FileSaver.saveAs(blob, 'text.txt');
+  openDownloadFile(): void {
+    const dialogRef = this.dialog.open(DialogDownloadFileComponent, {
+      width: '500px',
+      data: this.text
+    });
   }
 }
