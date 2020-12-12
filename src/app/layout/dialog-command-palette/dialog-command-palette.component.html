@@ -1,7 +1,7 @@
 <h2 mat-dialog-title>Command search</h2>
 <mat-dialog-content>
   <form class="command-form">
-    <mat-form-field class="command-form-width">
+    <mat-form-field class="input-full-width">
       <mat-label for="command">Start typing...</mat-label>
       <input id="command" matInput type="text" autocomplete="off" [formControl]="searchInput" name="command"
              (ngModelChange)="filterCommands()">

@@ -1,4 +1,4 @@
-import {Component, Inject, Injector} from '@angular/core';
+import {Component, Injector} from '@angular/core';
 import {ScriptsManagerService} from '../../services/scripts-manager.service';
 import {CommandHistoryManagerService} from '../../services/command-history-manager.service';
 import {IScript} from '../../shared/IScript';
