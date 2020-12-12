@@ -1,7 +1,7 @@
 <mat-list>
   <div mat-subheader>Last used commands</div>
   <ng-container *ngIf="historyCommandList && historyCommandList.length > 0; else noCommandYet">
-    <mat-list-item *ngFor="let history of historyCommandList.reverse()">
+    <mat-list-item *ngFor="let history of historyCommandList">
       <mat-icon mat-list-icon>{{history.commandIcon}}</mat-icon>
       <div mat-line>{{history.commandName}}</div>
       <div mat-line> {{history.date | date:'mediumTime'}} </div>

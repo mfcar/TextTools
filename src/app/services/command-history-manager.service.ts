@@ -18,7 +18,7 @@ export class CommandHistoryManagerService {
   }
 
   returnHistory(): CommandHistory[] {
-    return this.actualHistory;
+    return this.actualHistory.reverse();
   }
 
   getLastStepNumber(): number {
