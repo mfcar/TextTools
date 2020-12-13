@@ -1,1 +1,4 @@
-<p>sidebar works!</p>
+<ng-container [ngSwitch]="sidebar">
+  <app-sidebar-history *ngSwitchCase="'0'"></app-sidebar-history>
+  <app-sidebar-commands *ngSwitchCase="'1'"></app-sidebar-commands>
+</ng-container>

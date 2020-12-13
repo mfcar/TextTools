@@ -29,3 +29,8 @@ export enum ParameterType {
   text,
   number
 }
+
+export enum Sidebar {
+  commandsList,
+  commandsHistory
+}

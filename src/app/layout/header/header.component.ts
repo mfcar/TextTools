@@ -1,6 +1,7 @@
 import {Component, EventEmitter, HostListener, Output} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {DialogCommandPaletteComponent} from '../dialog-command-palette/dialog-command-palette.component';
+import {Sidebar} from '../../shared/models';
 
 @Component({
   selector: 'app-header',
@@ -15,8 +16,8 @@ export class HeaderComponent {
     public dialog: MatDialog) {
   }
 
-  toggleHistorySidebar(): void {
-    this.toggleHistorySidebarEvent.emit();
+  toggleHistorySidebar(sidebar: Sidebar): void {
+    this.toggleHistorySidebarEvent.emit({sidebar});
     setTimeout(() => {
       window.dispatchEvent(
         new Event('resize')
