@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [12.x]
+        node-version: [14.x]
 
     steps:
       - uses: actions/checkout@v2
@@ -25,6 +25,7 @@ jobs:
         run: |
           npm install -g @angular/cli
           npm ci
+          ng lint
           ng deploy --base-href=/TextTools/ --repo=https://github.com/mfcar/TextTools.git --name=texttools --email=$EMAIL --message="Build from ${GITHUB_SHA} in the source repository." --branch=github_page
         env:
           CI: true

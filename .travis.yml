@@ -1,0 +1,18 @@
+language: node_js
+node_js:
+  - "14"
+dist: trusty
+sudo: required
+
+branches:
+  only:
+  - main
+
+before_script:
+  - npm install -g @angular/cli
+  - npm ci
+
+script:
+  - ng lint
+  - npm run test-headless
+  - ng build --prod --base-href=/TextTools/
