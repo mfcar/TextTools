@@ -6,6 +6,7 @@ import {Command, Sidebar} from '../../shared/models';
 import * as lodash from 'lodash';
 import {MatDialog} from '@angular/material/dialog';
 import {DialogDownloadFileComponent} from '../dialog-download-file/dialog-download-file.component';
+import {DialogRenameCanvasComponent} from '../dialog-rename-canvas/dialog-rename-canvas.component';
 
 @Component({
   selector: 'app-editor-canvas',
@@ -13,6 +14,7 @@ import {DialogDownloadFileComponent} from '../dialog-download-file/dialog-downlo
   styleUrls: ['./editor-canvas.component.scss']
 })
 export class EditorCanvasComponent {
+  canvasName = 'Editor';
   scriptOptions: string[];
   linesNumber = 0;
   characterCount = 0;
@@ -54,10 +56,23 @@ export class EditorCanvasComponent {
     this.historyManager.addToHistory(script);
   }
 
-  openDownloadFile(): void {
+  openDownloadFileDialog(): void {
     const dialogRef = this.dialog.open(DialogDownloadFileComponent, {
       width: '500px',
-      data: this.text
+      data: {canvasName: this.canvasName, text: this.text}
+    });
+  }
+
+  openRenameCanvasDialog(): void {
+    const dialogRef = this.dialog.open(DialogRenameCanvasComponent, {
+      width: '500px',
+      data: this.canvasName
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.canvasName = result;
+      }
     });
   }
 }
