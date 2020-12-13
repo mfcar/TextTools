@@ -1,0 +1,9 @@
+<mat-list>
+  <mat-nav-list>
+    <mat-list-item *ngFor="let script of commandList">
+      <mat-icon mat-list-icon>{{script.icon}}</mat-icon>
+      <div mat-line>{{script.name}}</div>
+      <div mat-line *ngIf="script.description">{{script.description}}</div>
+    </mat-list-item>
+  </mat-nav-list>
+</mat-list>

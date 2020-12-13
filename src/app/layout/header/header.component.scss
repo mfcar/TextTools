@@ -2,16 +2,12 @@
   padding: 0 14px;
 }
 
-mat-toolbar-row {
-  justify-content: space-between;
-}
-
 @media only screen and (max-width: 500px) {
-	mat-toolbar-row span {
-		display:none;
-	}
+  mat-toolbar-row span {
+    display: none;
+  }
 
-	mat-toolbar-row .mat-raised-button {
-		font-size: 12px;
-	}
+  mat-toolbar-row .mat-raised-button {
+    font-size: 12px;
+  }
 }

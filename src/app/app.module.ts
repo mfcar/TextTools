@@ -16,6 +16,7 @@ import {MatDialogModule} from '@angular/material/dialog';
 import { EditorCanvasComponent } from './layout/editor-canvas/editor-canvas.component';
 import {ClipboardModule} from '@angular/cdk/clipboard';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatTabsModule} from '@angular/material/tabs';
 import {MatCardModule} from '@angular/material/card';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatButtonModule} from '@angular/material/button';
@@ -24,6 +25,8 @@ import { DialogCommandParametersComponent } from './layout/dialog-command-parame
 import { SidebarCommandsComponent } from './layout/sidebar-commands/sidebar-commands.component';
 import {MatBottomSheetModule} from '@angular/material/bottom-sheet';
 import { DialogDownloadFileComponent } from './layout/dialog-download-file/dialog-download-file.component';
+import { SidebarComponent } from './layout/sidebar/sidebar.component';
+import { CommandsListComponent } from './layout/commands-list/commands-list.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +38,9 @@ import { DialogDownloadFileComponent } from './layout/dialog-download-file/dialo
     EditorCanvasComponent,
     DialogCommandParametersComponent,
     SidebarCommandsComponent,
-    DialogDownloadFileComponent
+    DialogDownloadFileComponent,
+    SidebarComponent,
+    CommandsListComponent
   ],
   imports: [
     BrowserModule,
@@ -53,7 +58,8 @@ import { DialogDownloadFileComponent } from './layout/dialog-download-file/dialo
     MatSidenavModule,
     MatButtonModule,
     MatSnackBarModule,
-    MatBottomSheetModule
+    MatBottomSheetModule,
+    MatTabsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

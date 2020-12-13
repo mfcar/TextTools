@@ -2,7 +2,7 @@ import {Component, Injector} from '@angular/core';
 import {ScriptsManagerService} from '../../services/scripts-manager.service';
 import {CommandHistoryManagerService} from '../../services/command-history-manager.service';
 import {IScript} from '../../shared/IScript';
-import {Command} from '../../shared/models';
+import {Command, Sidebar} from '../../shared/models';
 import * as lodash from 'lodash';
 import {MatDialog} from '@angular/material/dialog';
 import {DialogDownloadFileComponent} from '../dialog-download-file/dialog-download-file.component';
@@ -16,8 +16,9 @@ export class EditorCanvasComponent {
   scriptOptions: string[];
   linesNumber = 0;
   characterCount = 0;
-  commandsHistorySidebar = false;
+  sidebarOpen = false;
   text = '';
+  sidebarSelected: Sidebar = Sidebar.commandsList;
 
   constructor(private scriptManager: ScriptsManagerService,
               private historyManager: CommandHistoryManagerService,
@@ -25,8 +26,17 @@ export class EditorCanvasComponent {
     this.scriptOptions = this.scriptManager.list();
   }
 
-  commandHistorySidebarToggle(): void {
-    this.commandsHistorySidebar = !this.commandsHistorySidebar;
+  sidebarToggle(event: any): void {
+    if (this.sidebarOpen) {
+      if (this.sidebarSelected === event.sidebar) {
+        this.sidebarOpen = false;
+      } else {
+        this.sidebarOpen = true;
+      }
+    } else {
+      this.sidebarOpen = true;
+    }
+    this.sidebarSelected = event.sidebar;
   }
 
   onCodeChanged(value: any): void {
