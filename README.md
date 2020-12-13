@@ -10,6 +10,9 @@
   Useful tools to manage your strings quickly.
 </p>
 
+## Status
+[![Build Status](https://travis-ci.com/mfcar/TextTools.svg?branch=main)](https://travis-ci.com/mfcar/TextTools)
+
 ## Contributing
 
 To add your scripts
