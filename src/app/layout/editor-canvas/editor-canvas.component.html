@@ -1,4 +1,4 @@
-<app-header (toggleHistorySidebarEvent)="commandHistorySidebarToggle()"
+<app-header (toggleHistorySidebarEvent)="sidebarToggle()"
             (executeCommandEvent)="executeTransform($event)"></app-header>
 
 <mat-drawer-container>
@@ -32,8 +32,8 @@
       </mat-card-content>
     </mat-card>
   </mat-drawer-content>
-  <mat-drawer mode="side" opened position="end" [opened]="commandsHistorySidebar">
-    <app-sidebar-history></app-sidebar-history>
+  <mat-drawer mode="side" opened position="end" [opened]="sidebarOpen">
+    <app-sidebar></app-sidebar>
   </mat-drawer>
 </mat-drawer-container>
 

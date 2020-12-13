@@ -16,7 +16,7 @@ export class EditorCanvasComponent {
   scriptOptions: string[];
   linesNumber = 0;
   characterCount = 0;
-  commandsHistorySidebar = false;
+  sidebarOpen = false;
   text = '';
 
   constructor(private scriptManager: ScriptsManagerService,
@@ -25,8 +25,8 @@ export class EditorCanvasComponent {
     this.scriptOptions = this.scriptManager.list();
   }
 
-  commandHistorySidebarToggle(): void {
-    this.commandsHistorySidebar = !this.commandsHistorySidebar;
+  sidebarToggle(): void {
+    this.sidebarOpen = !this.sidebarOpen;
   }
 
   onCodeChanged(value: any): void {

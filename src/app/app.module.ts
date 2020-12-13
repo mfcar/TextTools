@@ -24,6 +24,7 @@ import { DialogCommandParametersComponent } from './layout/dialog-command-parame
 import { SidebarCommandsComponent } from './layout/sidebar-commands/sidebar-commands.component';
 import {MatBottomSheetModule} from '@angular/material/bottom-sheet';
 import { DialogDownloadFileComponent } from './layout/dialog-download-file/dialog-download-file.component';
+import { SidebarComponent } from './layout/sidebar/sidebar.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { DialogDownloadFileComponent } from './layout/dialog-download-file/dialo
     EditorCanvasComponent,
     DialogCommandParametersComponent,
     SidebarCommandsComponent,
-    DialogDownloadFileComponent
+    DialogDownloadFileComponent,
+    SidebarComponent
   ],
   imports: [
     BrowserModule,
