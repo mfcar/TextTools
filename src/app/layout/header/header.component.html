@@ -1,12 +1,14 @@
 <mat-toolbar color="primary">
   <mat-toolbar-row>
     <span>Text Tools</span>
+    <span class="spacer"></span>
     <button mat-raised-button (click)="openCommandDialog()" matTooltip="Show command palette">Open command palette or Ctrl + Shift + F</button>
+    <span class="spacer"></span>
     <button mat-icon-button (click)="toggleHistorySidebar(0)" matTooltip="Show commands history">
       <mat-icon class="example-icon" aria-hidden="false" aria-label="Show commands history">history</mat-icon>
     </button>
     <button mat-icon-button (click)="toggleHistorySidebar(1)" matTooltip="Show commands list">
-      <mat-icon class="example-icon" aria-hidden="false" aria-label="Show commands list">list</mat-icon>
+      <mat-icon class="example-icon" aria-hidden="false" aria-label="Show commands list">reorder</mat-icon>
     </button>
   </mat-toolbar-row>
 </mat-toolbar>

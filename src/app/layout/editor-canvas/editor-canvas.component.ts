@@ -27,7 +27,15 @@ export class EditorCanvasComponent {
   }
 
   sidebarToggle(event: any): void {
-    this.sidebarOpen = !this.sidebarOpen;
+    if (this.sidebarOpen) {
+      if (this.sidebarSelected === event.sidebar) {
+        this.sidebarOpen = false;
+      } else {
+        this.sidebarOpen = true;
+      }
+    } else {
+      this.sidebarOpen = true;
+    }
     this.sidebarSelected = event.sidebar;
   }
 
