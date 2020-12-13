@@ -3,8 +3,6 @@ name: Push to GitHub Pages
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
   build:
@@ -21,10 +19,13 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: npm install, build
+      - name: npm install
         run: |
           npm install -g @angular/cli
           npm ci
+
+      - name: ng build
+        run: |
           ng lint
           ng deploy --base-href=/TextTools/ --repo=https://github.com/mfcar/TextTools.git --name=texttools --email=$EMAIL --message="Build from ${GITHUB_SHA} in the source repository." --branch=github_page
         env:

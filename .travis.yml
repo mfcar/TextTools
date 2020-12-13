@@ -14,5 +14,4 @@ before_script:
 
 script:
   - ng lint
-  - npm run test-headless
   - ng build --prod --base-href=/TextTools/
