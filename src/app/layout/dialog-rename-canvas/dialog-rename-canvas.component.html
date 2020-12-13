@@ -1,0 +1,26 @@
+<form class="example-form">
+  <h1 mat-dialog-title>Rename canvas</h1>
+  <div mat-dialog-content>
+    <table class="input-full-width" cellspacing="0">
+      <tr>
+        <td>
+          <mat-form-field class="input-full-width">
+            <mat-label>Actual name</mat-label>
+            <input matInput [(ngModel)]="actualName" name="actualName" disabled>
+          </mat-form-field>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <mat-form-field class="input-full-width">
+            <mat-label>New name</mat-label>
+            <input matInput [(ngModel)]="data" name="data">
+          </mat-form-field>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-raised-button color="primary" [mat-dialog-close]="data" cdkFocusInitial [disabled]="!data">Rename canvas</button>
+  </div>
+</form>

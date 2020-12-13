@@ -27,6 +27,7 @@ import {MatBottomSheetModule} from '@angular/material/bottom-sheet';
 import { DialogDownloadFileComponent } from './layout/dialog-download-file/dialog-download-file.component';
 import { SidebarComponent } from './layout/sidebar/sidebar.component';
 import { CommandsListComponent } from './layout/commands-list/commands-list.component';
+import { DialogRenameCanvasComponent } from './layout/dialog-rename-canvas/dialog-rename-canvas.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { CommandsListComponent } from './layout/commands-list/commands-list.comp
     SidebarCommandsComponent,
     DialogDownloadFileComponent,
     SidebarComponent,
-    CommandsListComponent
+    CommandsListComponent,
+    DialogRenameCanvasComponent
   ],
   imports: [
     BrowserModule,

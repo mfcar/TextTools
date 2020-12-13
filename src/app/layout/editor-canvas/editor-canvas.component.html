@@ -5,7 +5,7 @@
   <mat-drawer-content>
     <mat-card>
       <mat-card-header>
-        <mat-card-title>Editor</mat-card-title>
+        <mat-card-title>{{canvasName}}</mat-card-title>
         <mat-card-subtitle>
           <ng-container [ngPlural]="characterCount">
             <ng-template ngPluralCase="=0">No character</ng-template>
@@ -20,10 +20,16 @@
           </ng-container>
         </mat-card-subtitle>
         <span class="spacer"></span>
-        <button mat-icon-button color="warn" aria-label="Copy content to clipboard" matTooltip="Copy content to clipboard" [cdkCopyToClipboard]="text">
+        <button mat-icon-button color="warn" aria-label="Rename this canvas" matTooltip="Rename this canvas"
+                (click)="openRenameCanvasDialog()">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" aria-label="Copy content to clipboard"
+                matTooltip="Copy content to clipboard" [cdkCopyToClipboard]="text">
           <mat-icon>content_copy</mat-icon>
         </button>
-        <button mat-icon-button color="warn" aria-label="Download this file" matTooltip="Download this file" (click)="openDownloadFile()">
+        <button mat-icon-button color="warn" aria-label="Download this file" matTooltip="Download this file"
+                (click)="openDownloadFileDialog()">
           <mat-icon>cloud_download</mat-icon>
         </button>
       </mat-card-header>
