@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "texttools-b66d4": {
+      "hosting": {
+        "TextTools": [
+          "texttools-b66d4"
+        ]
+      }
+    }
+  }
+}
