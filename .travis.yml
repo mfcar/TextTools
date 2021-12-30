@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - "14"
+  - "16"
 dist: trusty
 sudo: required
 
@@ -14,4 +14,4 @@ before_script:
 
 script:
   - ng lint
-  - ng build --prod --base-href=/TextTools/
+  - ng build --base-href=/TextTools/
