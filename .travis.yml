@@ -14,4 +14,5 @@ before_script:
 
 script:
   - ng lint
+  - npm run cypress:run
   - ng build --base-href=/TextTools/
