@@ -2,7 +2,9 @@
   <mat-toolbar-row>
     <span>Text Tools</span>
     <span class="spacer"></span>
-    <button mat-raised-button (click)="openCommandDialog()" matTooltip="Show command palette">Open command palette or Ctrl + Shift + F</button>
+    <button (click)="openCommandDialog()" mat-raised-button matTooltip="Show command palette">Open command palette or
+      Ctrl + Shift + F
+    </button>
     <span class="spacer"></span>
     <button mat-icon-button (click)="toggleHistorySidebar(0)" matTooltip="Show commands history">
       <mat-icon class="example-icon" aria-hidden="false" aria-label="Show commands history">history</mat-icon>
@@ -10,8 +12,9 @@
     <button mat-icon-button (click)="toggleHistorySidebar(1)" matTooltip="Show commands list">
       <mat-icon class="example-icon" aria-hidden="false" aria-label="Show commands list">reorder</mat-icon>
     </button>
-    <a mat-icon-button href="https://github.com/mfcar/TextTools" matTooltip="Github repository" target="_blank" class="githubButton">
-      <img src="assets/img/github-circle-white-transparent.svg"/>
+    <a class="githubButton" href="https://github.com/mfcar/TextTools" mat-icon-button matTooltip="Github repository"
+       rel="noopener" target="_blank">
+      <img alt="Github logo" src="assets/img/github-circle-white-transparent.svg" title="Github logo"/>
     </a>
   </mat-toolbar-row>
 </mat-toolbar>
