@@ -30,7 +30,7 @@ jobs:
 
       - name: E2E Testing
         run: |
-          npm start & wait-on http://localhost:8080
+          npm start & wait-on http://localhost:4200
           npm run cypress:run
 
       - name: Build & Deploy

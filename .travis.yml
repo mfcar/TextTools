@@ -14,5 +14,6 @@ before_script:
 
 script:
   - ng lint
+  - npm start & wait-on http://localhost:4200
   - npm run cypress:run
   - ng build --base-href=/TextTools/
