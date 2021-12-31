@@ -27,7 +27,7 @@ jobs:
       - name: ng build
         run: |
           ng lint
-          ng deploy --base-href=/TextTools/ --repo=https://github.com/mfcar/TextTools.git --name=texttools --email=$EMAIL --message="Build from ${GITHUB_SHA} in the source repository." --branch=github_page
+          ng deploy --base-href=/TextTools/ --repo=https://github.com/mfcar/TextTools.git --name=texttools --email=$EMAIL --message="Build from ${GITHUB_SHA} in the source repository." --branch=gh-pages
         env:
           CI: true
           GH_TOKEN: ${{ secrets.GITHUBTOKEN }}
