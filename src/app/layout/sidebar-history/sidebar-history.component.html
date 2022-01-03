@@ -1,19 +1,21 @@
-<mat-list>
-  <div mat-subheader>Last used commands</div>
-  <ng-container *ngIf="historyCommandList && historyCommandList.length > 0; else noCommandYet">
-    <mat-list-item *ngFor="let history of historyCommandList">
-      <mat-icon mat-list-icon>{{history.commandIcon}}</mat-icon>
-      <div mat-line>{{history.commandName}}</div>
-      <div mat-line> {{history.date | date:'mediumTime'}} </div>
-    </mat-list-item>
-    <mat-list-item>
-      <button mat-raised-button color="accent" (click)="clearHistory()">Clear history</button>
-    </mat-list-item>
-  </ng-container>
-  <ng-template #noCommandYet>
-    <mat-list-item>
-      <mat-icon mat-list-icon>sentiment_very_dissatisfied</mat-icon>
-      <div mat-line>No commands used yet</div>
-    </mat-list-item>
-  </ng-template>
-</mat-list>
+<div id="historySidebar">
+  <mat-list>
+    <div mat-subheader>Last used commands</div>
+    <ng-container *ngIf="historyCommandList && historyCommandList.length > 0; else noCommandYet">
+      <mat-list-item *ngFor="let history of historyCommandList">
+        <mat-icon mat-list-icon>{{history.commandIcon}}</mat-icon>
+        <div mat-line>{{history.commandName}}</div>
+        <div mat-line> {{history.date | date:'mediumTime'}} </div>
+      </mat-list-item>
+      <mat-list-item>
+        <button (click)="clearHistory()" color="accent" mat-raised-button>Clear history</button>
+      </mat-list-item>
+    </ng-container>
+    <ng-template #noCommandYet>
+      <mat-list-item>
+        <mat-icon mat-list-icon>sentiment_very_dissatisfied</mat-icon>
+        <div mat-line>No commands used yet</div>
+      </mat-list-item>
+    </ng-template>
+  </mat-list>
+</div>

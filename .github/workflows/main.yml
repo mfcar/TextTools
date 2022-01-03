@@ -19,14 +19,23 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: npm install
+      - name: NPM Install
         run: |
           npm install -g @angular/cli
           npm ci
 
-      - name: ng build
+      - name: Lint
         run: |
           ng lint
+
+      - name: E2E Testing
+        run: |
+          npm install wait-on
+          npm start & wait-on http://localhost:4200
+          npm run cypress:run
+
+      - name: Build & Deploy
+        run: |
           ng deploy --base-href=/TextTools/ --repo=https://github.com/mfcar/TextTools.git --name=texttools --email=$EMAIL --message="Build from ${GITHUB_SHA} in the source repository." --branch=gh-pages
         env:
           CI: true
