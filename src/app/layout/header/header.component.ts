@@ -28,7 +28,8 @@ export class HeaderComponent {
   @HostListener('document:keydown.shift.control.f')
   openCommandDialog(): void {
     const dialogRef = this.dialog.open(DialogCommandPaletteComponent, {
-      width: '500px'
+      width: '500px',
+      id: 'commandPaletteModal'
     });
 
     dialogRef.afterClosed().subscribe(result => {
