@@ -1,0 +1,42 @@
+name: Verify Pull Request integrity
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [ 16.x ]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2.5.1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: NPM Install
+        run: |
+          npm install -g @angular/cli
+          npm ci
+
+      - name: Lint
+        run: |
+          ng lint
+
+      - name: E2E Testing
+        run: |
+          npm install -g wait-on
+          npm start & wait-on http://localhost:4200
+          npm run cypress:run
+
+      - name: Build & Deploy
+        run: |
+          ng build --base-href=/TextTools/
+        env:
+          CI: true
