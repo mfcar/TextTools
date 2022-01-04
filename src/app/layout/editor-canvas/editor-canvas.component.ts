@@ -30,11 +30,7 @@ export class EditorCanvasComponent {
 
   sidebarToggle(event: any): void {
     if (this.sidebarOpen) {
-      if (this.sidebarSelected === event.sidebar) {
-        this.sidebarOpen = false;
-      } else {
-        this.sidebarOpen = true;
-      }
+      this.sidebarOpen = this.sidebarSelected !== event.sidebar;
     } else {
       this.sidebarOpen = true;
     }
@@ -57,7 +53,7 @@ export class EditorCanvasComponent {
   }
 
   openDownloadFileDialog(): void {
-    const dialogRef = this.dialog.open(DialogDownloadFileComponent, {
+    this.dialog.open(DialogDownloadFileComponent, {
       width: '500px',
       data: {canvasName: this.canvasName, text: this.text}
     });
