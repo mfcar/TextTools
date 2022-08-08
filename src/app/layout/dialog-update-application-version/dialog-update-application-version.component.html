@@ -1,0 +1,8 @@
+<h2 mat-dialog-title>A wild TextTools version appeared!</h2>
+<mat-dialog-content class="mat-typography">
+  <p>A new TextTools version is available.</p>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button (click)="onUpdateUpdate()" [mat-dialog-close]="true" cdkFocusInitial mat-button>Update</button>
+</mat-dialog-actions>

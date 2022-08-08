@@ -13,7 +13,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatDialogModule} from '@angular/material/dialog';
-import { EditorCanvasComponent } from './layout/editor-canvas/editor-canvas.component';
+import {EditorCanvasComponent} from './layout/editor-canvas/editor-canvas.component';
 import {ClipboardModule} from '@angular/cdk/clipboard';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatTabsModule} from '@angular/material/tabs';
@@ -21,13 +21,18 @@ import {MatCardModule} from '@angular/material/card';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatButtonModule} from '@angular/material/button';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
-import { DialogCommandParametersComponent } from './layout/dialog-command-parameters/dialog-command-parameters.component';
-import { SidebarCommandsComponent } from './layout/sidebar-commands/sidebar-commands.component';
+import {DialogCommandParametersComponent} from './layout/dialog-command-parameters/dialog-command-parameters.component';
+import {SidebarCommandsComponent} from './layout/sidebar-commands/sidebar-commands.component';
 import {MatBottomSheetModule} from '@angular/material/bottom-sheet';
-import { DialogDownloadFileComponent } from './layout/dialog-download-file/dialog-download-file.component';
-import { SidebarComponent } from './layout/sidebar/sidebar.component';
-import { CommandsListComponent } from './layout/commands-list/commands-list.component';
-import { DialogRenameCanvasComponent } from './layout/dialog-rename-canvas/dialog-rename-canvas.component';
+import {DialogDownloadFileComponent} from './layout/dialog-download-file/dialog-download-file.component';
+import {SidebarComponent} from './layout/sidebar/sidebar.component';
+import {CommandsListComponent} from './layout/commands-list/commands-list.component';
+import {DialogRenameCanvasComponent} from './layout/dialog-rename-canvas/dialog-rename-canvas.component';
+import {ServiceWorkerModule} from '@angular/service-worker';
+import {environment} from '../environments/environment';
+import {
+  DialogUpdateApplicationVersionComponent
+} from './layout/dialog-update-application-version/dialog-update-application-version.component';
 
 @NgModule({
   declarations: [
@@ -42,7 +47,8 @@ import { DialogRenameCanvasComponent } from './layout/dialog-rename-canvas/dialo
     DialogDownloadFileComponent,
     SidebarComponent,
     CommandsListComponent,
-    DialogRenameCanvasComponent
+    DialogRenameCanvasComponent,
+    DialogUpdateApplicationVersionComponent
   ],
   imports: [
     BrowserModule,
@@ -61,7 +67,13 @@ import { DialogRenameCanvasComponent } from './layout/dialog-rename-canvas/dialo
     MatButtonModule,
     MatSnackBarModule,
     MatBottomSheetModule,
-    MatTabsModule
+    MatTabsModule,
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: environment.production,
+      // Register the ServiceWorker as soon as the app is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    })
   ],
   providers: [],
   bootstrap: [AppComponent]
