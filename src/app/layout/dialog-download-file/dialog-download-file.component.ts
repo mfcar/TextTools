@@ -1,6 +1,14 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import * as FileSaver from 'file-saver';
-import {MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {
+  MatDialog,
+  MAT_DIALOG_DATA,
+  MatDialogRef,
+  MatDialogTitle,
+  MatDialogContent,
+  MatDialogActions,
+  MatDialogClose,
+} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-dialog-download-file',

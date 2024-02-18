@@ -2,7 +2,15 @@ import {Component, Inject, OnInit} from '@angular/core';
 import * as lodash from 'lodash';
 import {Command} from '../../shared/models';
 import {FormControl} from '@angular/forms';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {
+  MatDialog,
+  MAT_DIALOG_DATA,
+  MatDialogRef,
+  MatDialogTitle,
+  MatDialogContent,
+  MatDialogActions,
+  MatDialogClose,
+} from '@angular/material/dialog';
 import {ScriptsManagerService} from '../../services/scripts-manager.service';
 import {MatBottomSheet} from '@angular/material/bottom-sheet';
 import {DialogCommandParametersComponent} from '../dialog-command-parameters/dialog-command-parameters.component';
