@@ -196,6 +196,34 @@ describe('DocumentStore — undo/redo', () => {
     expect(store.canRedo()).toBe(false);
   });
 
+  it('jumps to an arbitrary point in history and back to the base', async () => {
+    for (const ch of ['a', 'b', 'c']) {
+      await store.applyTool(id, 'append', { s: ch });
+    }
+    expect(store.entityMap()[id].currentContent).toBe('abc');
+
+    await store.goTo(id, 1);
+    expect(store.entityMap()[id].currentContent).toBe('a');
+    expect(store.entityMap()[id].cursor).toBe(1);
+
+    await store.goTo(id, 3);
+    expect(store.entityMap()[id].currentContent).toBe('abc');
+
+    await store.goTo(id, 0);
+    expect(store.entityMap()[id].currentContent).toBe('');
+    expect(store.canRedo()).toBe(true);
+  });
+
+  it('clamps goTo targets and is a no-op at the current cursor', async () => {
+    await store.applyTool(id, 'append', { s: 'a' });
+    await store.goTo(id, 99);
+    expect(store.entityMap()[id].cursor).toBe(1);
+    await store.goTo(id, -5);
+    expect(store.entityMap()[id].cursor).toBe(0);
+    await store.goTo(id, 0); // already there
+    expect(store.entityMap()[id].currentContent).toBe('');
+  });
+
   it('stays correct across many steps using checkpoints', async () => {
     for (const ch of ['a', 'b', 'c', 'd', 'e']) {
       await store.applyTool(id, 'append', { s: ch });

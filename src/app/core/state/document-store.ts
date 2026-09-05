@@ -1,6 +1,12 @@
 import { computed, inject } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
-import { addEntity, removeEntity, updateEntity, withEntities } from '@ngrx/signals/entities';
+import {
+  addEntity,
+  removeEntity,
+  setAllEntities,
+  updateEntity,
+  withEntities,
+} from '@ngrx/signals/entities';
 import { HISTORY_CONFIG } from '../perf/history-policy';
 import { ToolParams } from '../tools/param-schema';
 import { ToolExecutor } from '../tools/tool-executor';
@@ -58,6 +64,19 @@ export const DocumentStore = signalStore(
     const run: StepRunner = (step, input) => executor.execute(step.toolId, input, step.params);
 
     return {
+      hydrate(documents: readonly TextDocument[], activeId: string | null): void {
+        const known = new Set(documents.map((doc) => doc.id));
+        const nextActive = activeId && known.has(activeId) ? activeId : (documents[0]?.id ?? null);
+        const untitledCount = documents.reduce((max, doc) => {
+          const match = /^Untitled (\d+)$/.exec(doc.name);
+          return match ? Math.max(max, Number(match[1])) : max;
+        }, 0);
+        patchState(store, setAllEntities(documents as TextDocument[]), {
+          activeId: nextActive,
+          untitledCount,
+        });
+      },
+
       openDocument(options: OpenDocumentOptions = {}): string {
         const id = newId();
         const untitledCount = store.untitledCount() + 1;
@@ -214,6 +233,34 @@ export const DocumentStore = signalStore(
         patchState(
           store,
           updateEntity({ id, changes: { currentContent: content, cursor: target, checkpoints } }),
+        );
+      },
+
+      async goTo(id: string, target: number): Promise<void> {
+        const doc = store.entityMap()[id];
+        if (!doc) {
+          return;
+        }
+        const clamped = Math.max(0, Math.min(target, doc.history.length));
+        if (clamped === doc.cursor) {
+          return;
+        }
+        const content = await replayTo(run, doc.baseContent, doc.checkpoints, doc.history, clamped);
+
+        let checkpoints = doc.checkpoints;
+        if (
+          isCheckpointIndex(clamped, config.checkpointInterval) &&
+          selectReplayStart(doc.baseContent, checkpoints, clamped).index !== clamped
+        ) {
+          checkpoints = pruneCheckpoints(
+            [...checkpoints, { index: clamped, content }],
+            config.checkpointBudgetBytes,
+          );
+        }
+
+        patchState(
+          store,
+          updateEntity({ id, changes: { currentContent: content, cursor: clamped, checkpoints } }),
         );
       },
 

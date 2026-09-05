@@ -1,0 +1,19 @@
+{
+  "name": "TextTools",
+  "short_name": "TextTools",
+  "description": "A fast, private, client-side text toolbox.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#fef7ff",
+  "theme_color": "#6750a4",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

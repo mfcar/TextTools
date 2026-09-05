@@ -2,23 +2,37 @@
   <div class="workspace__tabs" role="toolbar" aria-label="Open documents">
     @for (doc of documents(); track doc.id) {
       <div class="workspace__tab" [class.workspace__tab--active]="doc.id === activeId()">
-        <button
-          type="button"
-          class="workspace__tab-label"
-          (click)="select(doc.id)"
-          [attr.aria-current]="doc.id === activeId() ? 'true' : null"
-        >
-          {{ doc.name }}
-        </button>
-        <button
-          matIconButton
-          class="workspace__tab-close"
-          (click)="close(doc.id)"
-          [attr.aria-label]="'Close ' + doc.name"
-          matTooltip="Close"
-        >
-          <mat-icon>close</mat-icon>
-        </button>
+        @if (renamingId() === doc.id) {
+          <input
+            class="workspace__tab-input"
+            type="text"
+            [attr.aria-label]="'Rename ' + doc.name"
+            [value]="draftName()"
+            (input)="onRenameInput($event)"
+            (keydown)="onRenameKeydown($event)"
+            (blur)="commitRename()"
+            appAutofocus
+          />
+        } @else {
+          <button
+            type="button"
+            class="workspace__tab-label"
+            (click)="select(doc.id)"
+            (dblclick)="startRename(doc.id, doc.name)"
+            [attr.aria-current]="doc.id === activeId() ? 'true' : null"
+          >
+            {{ doc.name }}
+          </button>
+          <button
+            matIconButton
+            class="workspace__tab-close"
+            (click)="close(doc.id)"
+            [attr.aria-label]="'Close ' + doc.name"
+            matTooltip="Close"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        }
       </div>
     }
     <button
@@ -31,6 +45,34 @@
       <mat-icon>add</mat-icon>
     </button>
   </div>
+
+  @if (activeDocument(); as doc) {
+    <div class="workspace__actions" role="toolbar" aria-label="Document actions">
+      <button
+        matButton
+        (click)="startRename(doc.id, doc.name)"
+        matTooltip="Rename document"
+        aria-label="Rename document"
+      >
+        <mat-icon>edit</mat-icon>
+        Rename
+      </button>
+      <span class="workspace__actions-spacer"></span>
+      <button matButton (click)="copy()" matTooltip="Copy text" aria-label="Copy text">
+        <mat-icon>content_copy</mat-icon>
+        Copy
+      </button>
+      <button
+        matButton
+        (click)="download()"
+        matTooltip="Download as .txt"
+        aria-label="Download as text file"
+      >
+        <mat-icon>download</mat-icon>
+        Download
+      </button>
+    </div>
+  }
 
   <div class="workspace__editor">
     @for (doc of activeDocuments(); track doc.id) {

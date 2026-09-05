@@ -8,6 +8,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Theme, ThemePreference } from '../../core/theme';
 import { UiStore } from '../../core/state/ui-store';
 import { CommandPalette } from '../../palette/command-palette';
+import { HistoryPanel } from '../../history/history-panel';
 
 interface ThemeOption {
   value: ThemePreference;
@@ -24,6 +25,7 @@ interface ThemeOption {
     MatTooltipModule,
     MatSidenavModule,
     CommandPalette,
+    HistoryPanel,
   ],
   selector: 'app-shell',
   styleUrl: './shell.scss',

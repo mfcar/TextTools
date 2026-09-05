@@ -16,12 +16,16 @@
     </span>
     <span class="shell__spacer"></span>
     <button
-      matIconButton
+      matButton="outlined"
+      class="shell__search"
       (click)="ui.openPalette()"
       matTooltip="Command palette (Ctrl+K)"
       aria-label="Open command palette"
+      aria-keyshortcuts="Control+K"
     >
       <mat-icon>search</mat-icon>
+      <span class="shell__search-label">Search tools</span>
+      <span class="shell__search-key" aria-hidden="true">Ctrl K</span>
     </button>
     <button
       matIconButton
@@ -57,7 +61,11 @@
       (openedChange)="ui.setSidebar($event)"
     >
       <nav class="shell__sidebar" aria-label="Tools and history">
-        <p class="shell__sidebar-hint">Tools and history will appear here.</p>
+        @defer (on idle) {
+          <app-history-panel />
+        } @placeholder {
+          <p class="shell__sidebar-hint">Loading history…</p>
+        }
       </nav>
     </mat-sidenav>
     <mat-sidenav-content class="shell__content">

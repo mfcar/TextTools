@@ -1,0 +1,77 @@
+<section class="history" aria-labelledby="history-heading">
+  <header class="history__header">
+    <h2 id="history-heading" class="history__title">History</h2>
+    <div class="history__actions">
+      <button
+        matIconButton
+        (click)="undo()"
+        [disabled]="!canUndo()"
+        matTooltip="Undo"
+        aria-label="Undo last step"
+      >
+        <mat-icon>undo</mat-icon>
+      </button>
+      <button
+        matIconButton
+        (click)="redo()"
+        [disabled]="!canRedo()"
+        matTooltip="Redo"
+        aria-label="Redo step"
+      >
+        <mat-icon>redo</mat-icon>
+      </button>
+      <button
+        matIconButton
+        (click)="clear()"
+        [disabled]="!document() || steps().length === 0"
+        matTooltip="Clear history"
+        aria-label="Clear history"
+      >
+        <mat-icon>delete_sweep</mat-icon>
+      </button>
+    </div>
+  </header>
+
+  @if (document()) {
+    <ol class="history__list" aria-label="Applied steps">
+      <li>
+        <button
+          type="button"
+          class="history__step"
+          [class.history__step--active]="cursor() === 0"
+          [attr.aria-current]="cursor() === 0 ? 'step' : null"
+          (click)="goTo(0)"
+        >
+          <mat-icon class="history__step-icon" aria-hidden="true">flag</mat-icon>
+          <span class="history__step-name">Original text</span>
+        </button>
+      </li>
+    </ol>
+
+    @if (steps().length) {
+      <cdk-virtual-scroll-viewport class="history__scroll" itemSize="64">
+        <ol class="history__list">
+          <li *cdkVirtualFor="let step of steps(); let i = index">
+            <button
+              type="button"
+              class="history__step"
+              [class.history__step--active]="cursor() === i + 1"
+              [attr.aria-current]="cursor() === i + 1 ? 'step' : null"
+              (click)="goTo(i + 1)"
+            >
+              <span class="history__step-index">{{ i + 1 }}</span>
+              <span class="history__step-text">
+                <span class="history__step-name">{{ step.toolName }}</span>
+                <span class="history__step-time">{{ step.at | date: 'shortTime' }}</span>
+              </span>
+            </button>
+          </li>
+        </ol>
+      </cdk-virtual-scroll-viewport>
+    } @else {
+      <p class="history__empty">No steps yet. Run a tool to build history.</p>
+    }
+  } @else {
+    <p class="history__empty">Open a document to see its history.</p>
+  }
+</section>

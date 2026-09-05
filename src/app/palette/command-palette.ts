@@ -72,12 +72,6 @@ export class CommandPalette {
         this.reset();
       }
     });
-
-    effect(() => {
-      if (this.ui.paletteOpen() && !this.selected()) {
-        this.viewport()?.scrollToIndex(this.activeIndex());
-      }
-    });
   }
 
   protected onSearch(event: Event): void {
@@ -100,25 +94,30 @@ export class CommandPalette {
       return;
     }
 
-    const count = this.results().length;
     switch (event.key) {
       case 'ArrowDown':
         event.preventDefault();
-        if (count) {
-          this.activeIndex.set((this.activeIndex() + 1) % count);
-        }
+        this.moveActive(1);
         break;
       case 'ArrowUp':
         event.preventDefault();
-        if (count) {
-          this.activeIndex.set((this.activeIndex() - 1 + count) % count);
-        }
+        this.moveActive(-1);
         break;
       case 'Enter':
         event.preventDefault();
         this.choose(this.activeTool());
         break;
     }
+  }
+
+  private moveActive(delta: number): void {
+    const count = this.results().length;
+    if (!count) {
+      return;
+    }
+    const next = (this.activeIndex() + delta + count) % count;
+    this.activeIndex.set(next);
+    this.viewport()?.scrollToIndex(next);
   }
 
   protected choose(tool: ToolDefinition | null): void {

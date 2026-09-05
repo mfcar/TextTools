@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="TextTools">
+  <rect width="512" height="512" fill="#6750a4" />
+  <g fill="#ffffff">
+    <rect x="146" y="168" width="220" height="40" rx="8" />
+    <rect x="236" y="168" width="40" height="200" rx="8" />
+  </g>
+</svg>

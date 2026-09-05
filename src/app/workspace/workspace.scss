@@ -39,6 +39,29 @@
   cursor: pointer;
 }
 
+.workspace__tab-input {
+  max-inline-size: 12rem;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--mat-sys-primary);
+  border-radius: var(--mat-sys-corner-small);
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-label-large);
+}
+
+.workspace__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  border-block-end: 1px solid var(--mat-sys-outline-variant);
+  background-color: var(--mat-sys-surface-container-low);
+}
+
+.workspace__actions-spacer {
+  flex: 1 1 auto;
+}
+
 .workspace__editor {
   flex: 1 1 auto;
   min-block-size: 0;
