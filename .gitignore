@@ -39,6 +39,11 @@ testem.log
 /typings
 __screenshots__/
 
+# Playwright
+/test-results
+/playwright-report
+/playwright/.cache
+
 # System files
 .DS_Store
 Thumbs.db
