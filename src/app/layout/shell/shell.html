@@ -1,0 +1,25 @@
+<div class="shell">
+  <mat-toolbar class="shell__header">
+    <span class="shell__brand">
+      <mat-icon aria-hidden="true">text_fields</mat-icon>
+      <span class="shell__title">TextTools</span>
+    </span>
+    <span class="shell__spacer"></span>
+    <button matIconButton [attr.aria-label]="themeLabel()" (click)="theme.cycle()">
+      <mat-icon>{{ themeIcon() }}</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <main class="shell__content">
+    <section class="shell__welcome">
+      <h1 class="shell__headline">Welcome to TextTools</h1>
+      <p class="shell__lead">Useful tools to manage your strings quickly.</p>
+    </section>
+    <ng-content />
+  </main>
+
+  <footer class="shell__footer">
+    <span>TextTools</span>
+    <span>Runs entirely in your browser</span>
+  </footer>
+</div>

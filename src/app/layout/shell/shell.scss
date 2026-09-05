@@ -1,0 +1,67 @@
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.shell__header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--mat-sys-surface-container);
+  color: var(--mat-sys-on-surface);
+}
+
+.shell__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.shell__title {
+  font: var(--mat-sys-title-large);
+}
+
+.shell__spacer {
+  flex: 1 1 auto;
+}
+
+.shell__content {
+  flex: 1 1 auto;
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding: 2rem 1.5rem;
+}
+
+.shell__welcome {
+  text-align: center;
+  margin-block: 2rem;
+}
+
+.shell__headline {
+  margin: 0 0 0.75rem;
+  font: var(--mat-sys-headline-medium);
+  color: var(--mat-sys-primary);
+}
+
+.shell__lead {
+  margin: 0 auto;
+  max-width: 42rem;
+  font: var(--mat-sys-body-large);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.shell__footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1.5rem;
+  border-top: 1px solid var(--mat-sys-outline-variant);
+  background-color: var(--mat-sys-surface-container);
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-body-small);
+}
