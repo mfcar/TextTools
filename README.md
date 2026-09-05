@@ -51,4 +51,3 @@ To add your scripts
 Thanks to [Angular](https://angular.io/), [Lodash](https://lodash.com/), [Boop](https://boop.okat.best/)
 , [CyberChef](https://gchq.github.io/CyberChef) and many other authors for providing the libs, references, knowledge for
 this project happens.
-

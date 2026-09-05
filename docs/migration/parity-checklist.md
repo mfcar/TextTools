@@ -7,6 +7,7 @@ Reference for the Angular 13 → 22 rebuild. Every item below exists in the curr
 Verify each produces identical output to the old app for representative inputs, **plus** the new edge-case handling noted in the plan.
 
 ### Encodings
+
 - [ ] Base64 Encode — string → base64 (new: UTF-8-safe, incl. non-Latin1)
 - [ ] Base64 Decode — base64 → string (new: invalid input → error, no crash)
 - [ ] Binary Encode — string → binary
@@ -20,6 +21,7 @@ Verify each produces identical output to the old app for representative inputs, 
 - [ ] Escape — characters → HTML entities
 
 ### Case / format
+
 - [ ] Uppercase
 - [ ] Lowercase
 - [ ] Camel Case
@@ -28,6 +30,7 @@ Verify each produces identical output to the old app for representative inputs, 
 - [ ] Deburr — strip accents/special chars
 
 ### Line / string ops
+
 - [ ] Sort Lines Asc
 - [ ] Sort Lines Desc
 - [ ] Text Reverser
@@ -37,6 +40,7 @@ Verify each produces identical output to the old app for representative inputs, 
 - [ ] Minify JSON — (new: invalid JSON → friendly error)
 
 ## App behaviors
+
 - [ ] Single editor buffer with live char count + line count (new: multi-tab; grapheme-aware count)
 - [ ] Command palette opens via button and keyboard shortcut (old: `Ctrl+Shift+F`)
 - [ ] Palette search filters by name/description (accent-insensitive)
@@ -48,6 +52,7 @@ Verify each produces identical output to the old app for representative inputs, 
 - [ ] Rename the canvas/tab
 
 ## New in the rebuild (not in old app)
+
 - [ ] Multiple tabs/documents (create, switch, rename, close)
 - [ ] Light/dark theme
 - [ ] Responsive layout (mobile) + labeled, accessible editor
