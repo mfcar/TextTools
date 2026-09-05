@@ -1,0 +1,53 @@
+<div class="workspace">
+  <div class="workspace__tabs" role="toolbar" aria-label="Open documents">
+    @for (doc of documents(); track doc.id) {
+      <div class="workspace__tab" [class.workspace__tab--active]="doc.id === activeId()">
+        <button
+          type="button"
+          class="workspace__tab-label"
+          (click)="select(doc.id)"
+          [attr.aria-current]="doc.id === activeId() ? 'true' : null"
+        >
+          {{ doc.name }}
+        </button>
+        <button
+          matIconButton
+          class="workspace__tab-close"
+          (click)="close(doc.id)"
+          [attr.aria-label]="'Close ' + doc.name"
+          matTooltip="Close"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    }
+    <button
+      matIconButton
+      class="workspace__new"
+      (click)="newTab()"
+      aria-label="New document"
+      matTooltip="New document"
+    >
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+
+  <div class="workspace__editor">
+    @for (doc of activeDocuments(); track doc.id) {
+      @defer (on immediate) {
+        <app-editor
+          [value]="doc.currentContent"
+          (valueChange)="onEdit(doc.id, $event)"
+          [label]="doc.name + ' content'"
+        />
+      } @placeholder {
+        <div class="workspace__editor-loading" aria-hidden="true"></div>
+      }
+    } @empty {
+      <div class="workspace__empty">
+        <p class="workspace__empty-text">No document open.</p>
+        <button matButton="filled" (click)="newTab()">New document</button>
+      </div>
+    }
+  </div>
+</div>

@@ -1,10 +1,28 @@
 <div class="shell">
   <mat-toolbar class="shell__header">
+    <button
+      matIconButton
+      (click)="ui.toggleSidebar()"
+      [attr.aria-label]="ui.sidebarOpen() ? 'Hide sidebar' : 'Show sidebar'"
+      [attr.aria-expanded]="ui.sidebarOpen()"
+      aria-controls="app-sidebar"
+      matTooltip="Toggle sidebar"
+    >
+      <mat-icon>menu</mat-icon>
+    </button>
     <span class="shell__brand">
       <mat-icon aria-hidden="true">text_fields</mat-icon>
       <span class="shell__title">TextTools</span>
     </span>
     <span class="shell__spacer"></span>
+    <button
+      matIconButton
+      (click)="ui.openPalette()"
+      matTooltip="Command palette (Ctrl+K)"
+      aria-label="Open command palette"
+    >
+      <mat-icon>search</mat-icon>
+    </button>
     <button
       matIconButton
       [matMenuTriggerFor]="themeMenu"
@@ -30,16 +48,31 @@
     </mat-menu>
   </mat-toolbar>
 
-  <main class="shell__content">
-    <section class="shell__welcome">
-      <h1 class="shell__headline">Welcome to TextTools</h1>
-      <p class="shell__lead">Useful tools to manage your strings quickly.</p>
-    </section>
-    <ng-content />
-  </main>
+  <mat-sidenav-container class="shell__body">
+    <mat-sidenav
+      id="app-sidebar"
+      class="shell__drawer"
+      mode="side"
+      [opened]="ui.sidebarOpen()"
+      (openedChange)="ui.setSidebar($event)"
+    >
+      <nav class="shell__sidebar" aria-label="Tools and history">
+        <p class="shell__sidebar-hint">Tools and history will appear here.</p>
+      </nav>
+    </mat-sidenav>
+    <mat-sidenav-content class="shell__content">
+      <main class="shell__main">
+        <ng-content />
+      </main>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
 
   <footer class="shell__footer">
     <span>TextTools</span>
     <span>Runs entirely in your browser</span>
   </footer>
+
+  @defer (when ui.paletteOpen(); prefetch on idle) {
+    <app-command-palette />
+  }
 </div>

@@ -3,6 +3,7 @@ import { patchState, signalStore, withComputed, withMethods, withState } from '@
 import { addEntity, removeEntity, updateEntity, withEntities } from '@ngrx/signals/entities';
 import { HISTORY_CONFIG } from '../perf/history-policy';
 import { ToolParams } from '../tools/param-schema';
+import { ToolExecutor } from '../tools/tool-executor';
 import { ToolRegistry } from '../tools/tool-registry';
 import { ToolResult, failure } from '../tools/tool';
 import { AppliedStep, Checkpoint, TextDocument } from './models';
@@ -52,8 +53,9 @@ export const DocumentStore = signalStore(
   })),
   withMethods((store) => {
     const registry = inject(ToolRegistry);
+    const executor = inject(ToolExecutor);
     const config = inject(HISTORY_CONFIG);
-    const run: StepRunner = (step, input) => registry.execute(step.toolId, input, step.params);
+    const run: StepRunner = (step, input) => executor.execute(step.toolId, input, step.params);
 
     return {
       openDocument(options: OpenDocumentOptions = {}): string {
@@ -130,7 +132,7 @@ export const DocumentStore = signalStore(
           return failure(`Unknown tool "${toolId}".`);
         }
 
-        const result = await registry.execute(toolId, doc.currentContent, params);
+        const result = await executor.execute(toolId, doc.currentContent, params);
         if (!result.ok) {
           return result;
         }

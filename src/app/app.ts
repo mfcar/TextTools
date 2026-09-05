@@ -1,8 +1,9 @@
 import { Component, signal } from '@angular/core';
 import { Shell } from './layout/shell/shell';
+import { Workspace } from './workspace/workspace';
 
 @Component({
-  imports: [Shell],
+  imports: [Shell, Workspace],
   selector: 'app-root',
   styleUrl: './app.scss',
   templateUrl: './app.html',

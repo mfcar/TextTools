@@ -5,9 +5,8 @@ import {
   inject,
   makeEnvironmentProviders,
 } from '@angular/core';
-import { ToolParams } from './param-schema';
-import { ToolDefinition, ToolResult, failure, success } from './tool';
-import { validateParams } from './validate-params';
+import { executeTool } from './execute-tool';
+import { ToolDefinition, ToolResult, failure } from './tool';
 
 export const TOOL_DEFINITIONS = new InjectionToken<readonly ToolDefinition[]>('TOOL_DEFINITIONS');
 
@@ -102,17 +101,6 @@ export class ToolRegistry {
     if (!tool) {
       return failure(`Unknown tool "${id}".`);
     }
-
-    const { params, errors } = validateParams(tool.params, rawParams);
-    if (errors.length > 0) {
-      return failure(errors.join(' '));
-    }
-
-    try {
-      const result = await tool.run(input, params as ToolParams);
-      return typeof result === 'string' ? success(result) : result;
-    } catch (error) {
-      return failure(error instanceof Error ? error.message : String(error));
-    }
+    return executeTool(tool, input, rawParams);
   }
 }

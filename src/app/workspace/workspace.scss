@@ -1,0 +1,70 @@
+.workspace {
+  display: flex;
+  flex-direction: column;
+  block-size: 100%;
+  min-block-size: 0;
+}
+
+.workspace__tabs {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  overflow-x: auto;
+  border-block-end: 1px solid var(--mat-sys-outline-variant);
+  background-color: var(--mat-sys-surface-container-low);
+}
+
+.workspace__tab {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--mat-sys-corner-small);
+}
+
+.workspace__tab--active {
+  background-color: var(--mat-sys-secondary-container);
+  color: var(--mat-sys-on-secondary-container);
+}
+
+.workspace__tab-label {
+  max-inline-size: 12rem;
+  padding: 0.25rem 0.75rem;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: var(--mat-sys-label-large);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.workspace__editor {
+  flex: 1 1 auto;
+  min-block-size: 0;
+  display: flex;
+}
+
+.workspace__editor app-editor {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+}
+
+.workspace__editor-loading {
+  flex: 1 1 auto;
+}
+
+.workspace__empty {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.workspace__empty-text {
+  margin: 0;
+  font: var(--mat-sys-body-large);
+}
