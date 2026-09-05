@@ -6,8 +6,8 @@ html {
   @include mat.theme(
     (
       color: (
-        primary: mat.$violet-palette,
-        tertiary: mat.$cyan-palette,
+        primary: mat.$azure-palette,
+        tertiary: mat.$orange-palette,
       ),
       typography: (
         brand-family: 'Roboto Variable',

@@ -29,6 +29,11 @@
   flex: 1 1 auto;
 }
 
+.shell__theme-check {
+  margin-inline-start: auto;
+  color: var(--mat-sys-primary);
+}
+
 .shell__content {
   flex: 1 1 auto;
   width: 100%;

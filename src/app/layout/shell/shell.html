@@ -5,9 +5,29 @@
       <span class="shell__title">TextTools</span>
     </span>
     <span class="shell__spacer"></span>
-    <button matIconButton [attr.aria-label]="themeLabel()" (click)="theme.cycle()">
+    <button
+      matIconButton
+      [matMenuTriggerFor]="themeMenu"
+      [matTooltip]="themeTooltip()"
+      [attr.aria-label]="themeTooltip() + '. Change theme.'"
+    >
       <mat-icon>{{ themeIcon() }}</mat-icon>
     </button>
+    <mat-menu #themeMenu="matMenu">
+      @for (option of themeOptions; track option.value) {
+        <button
+          mat-menu-item
+          (click)="theme.set(option.value)"
+          [attr.aria-current]="theme.preference() === option.value ? 'true' : null"
+        >
+          <mat-icon>{{ option.icon }}</mat-icon>
+          <span>{{ option.label }}</span>
+          @if (theme.preference() === option.value) {
+            <mat-icon class="shell__theme-check" aria-hidden="true">check</mat-icon>
+          }
+        </button>
+      }
+    </mat-menu>
   </mat-toolbar>
 
   <main class="shell__content">
