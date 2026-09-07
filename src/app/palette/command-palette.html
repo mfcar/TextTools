@@ -1,0 +1,150 @@
+@if (ui.paletteOpen()) {
+  <button
+    type="button"
+    class="palette__scrim"
+    aria-label="Close command palette"
+    (click)="close()"
+  ></button>
+  <div
+    class="palette"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Command palette"
+    cdkTrapFocus
+    cdkTrapFocusAutoCapture
+    (keydown)="onKeydown($event)"
+  >
+    @if (selected(); as tool) {
+      <div class="palette__form">
+        <div class="palette__form-head">
+          <button matIconButton (click)="back()" aria-label="Back to command list">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+          <div class="palette__form-heading">
+            <p class="palette__form-title">{{ tool.name }}</p>
+            <p class="palette__form-desc">{{ tool.description }}</p>
+          </div>
+        </div>
+
+        <div class="palette__fields">
+          @for (param of tool.params; track param.key) {
+            @switch (param.type) {
+              @case ('boolean') {
+                <mat-checkbox
+                  [checked]="paramBool(param.key)"
+                  (change)="setBool(param.key, $event.checked)"
+                >
+                  {{ param.label }}
+                </mat-checkbox>
+              }
+              @case ('select') {
+                <mat-form-field>
+                  <mat-label>{{ param.label }}</mat-label>
+                  <mat-select
+                    [value]="paramString(param.key)"
+                    (selectionChange)="setSelect(param.key, $event.value)"
+                  >
+                    @for (option of selectOptions(param); track option.value) {
+                      <mat-option [value]="option.value">{{ option.label }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              }
+              @case ('number') {
+                <mat-form-field>
+                  <mat-label>{{ param.label }}</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    [value]="paramString(param.key)"
+                    (input)="setParam(param.key, $event)"
+                    [min]="numberMin(param)"
+                    [max]="numberMax(param)"
+                    [step]="numberStep(param)"
+                  />
+                  @if (param.description) {
+                    <mat-hint>{{ param.description }}</mat-hint>
+                  }
+                </mat-form-field>
+              }
+              @default {
+                <mat-form-field>
+                  <mat-label>{{ param.label }}</mat-label>
+                  <input
+                    matInput
+                    type="text"
+                    [value]="paramString(param.key)"
+                    (input)="setParam(param.key, $event)"
+                  />
+                  @if (param.description) {
+                    <mat-hint>{{ param.description }}</mat-hint>
+                  }
+                </mat-form-field>
+              }
+            }
+          }
+        </div>
+
+        @if (validation().errors.length) {
+          <ul class="palette__errors" aria-live="polite">
+            @for (error of validation().errors; track error) {
+              <li>{{ error }}</li>
+            }
+          </ul>
+        }
+
+        <div class="palette__actions">
+          <button matButton (click)="back()">Back</button>
+          <button matButton="filled" (click)="submit()" [disabled]="!canRun() || running()">
+            Run
+          </button>
+        </div>
+      </div>
+    } @else {
+      <input
+        class="palette__search"
+        type="text"
+        role="combobox"
+        aria-label="Search tools"
+        aria-expanded="true"
+        aria-controls="palette-listbox"
+        [attr.aria-activedescendant]="activeTool() ? 'palette-option-' + activeIndex() : null"
+        placeholder="Search tools…"
+        [value]="query()"
+        (input)="onSearch($event)"
+      />
+
+      @if (results().length) {
+        <cdk-virtual-scroll-viewport
+          class="palette__list"
+          id="palette-listbox"
+          role="listbox"
+          aria-label="Tools"
+          itemSize="60"
+        >
+          <button
+            *cdkVirtualFor="let tool of results(); let i = index"
+            type="button"
+            class="palette__item"
+            role="option"
+            tabindex="-1"
+            [id]="'palette-option-' + i"
+            [class.palette__item--active]="i === activeIndex()"
+            [attr.aria-selected]="i === activeIndex()"
+            (click)="choose(tool)"
+            (mouseenter)="activeIndex.set(i)"
+          >
+            <mat-icon aria-hidden="true">{{ tool.icon }}</mat-icon>
+            <span class="palette__item-text">
+              <span class="palette__item-name">{{ tool.name }}</span>
+              <span class="palette__item-desc">{{ tool.description }}</span>
+            </span>
+            <span class="palette__item-cat">{{ tool.category }}</span>
+          </button>
+        </cdk-virtual-scroll-viewport>
+      } @else {
+        <p class="palette__empty">No matching tools.</p>
+      }
+    }
+  </div>
+}

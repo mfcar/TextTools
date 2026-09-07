@@ -1,0 +1,21 @@
+@import 'tailwindcss';
+
+/*
+ * Bridge Tailwind's color utilities to Angular Material's M3 system variables so
+ * both styling layers share a single source of truth. `inline` keeps the values
+ * as `var(--mat-sys-*)` references, so utilities stay reactive to light/dark
+ * (the tokens resolve via `light-dark()` driven by `color-scheme`).
+ */
+@theme inline {
+  --color-surface: var(--mat-sys-surface);
+  --color-surface-container: var(--mat-sys-surface-container);
+  --color-surface-container-high: var(--mat-sys-surface-container-high);
+  --color-on-surface: var(--mat-sys-on-surface);
+  --color-on-surface-variant: var(--mat-sys-on-surface-variant);
+  --color-primary: var(--mat-sys-primary);
+  --color-on-primary: var(--mat-sys-on-primary);
+  --color-primary-container: var(--mat-sys-primary-container);
+  --color-on-primary-container: var(--mat-sys-on-primary-container);
+  --color-outline: var(--mat-sys-outline);
+  --color-outline-variant: var(--mat-sys-outline-variant);
+}

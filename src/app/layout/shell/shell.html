@@ -1,0 +1,86 @@
+<div class="shell">
+  <mat-toolbar class="shell__header">
+    <button
+      matIconButton
+      (click)="ui.toggleSidebar()"
+      [attr.aria-label]="ui.sidebarOpen() ? 'Hide sidebar' : 'Show sidebar'"
+      [attr.aria-expanded]="ui.sidebarOpen()"
+      aria-controls="app-sidebar"
+      matTooltip="Toggle sidebar"
+    >
+      <mat-icon>menu</mat-icon>
+    </button>
+    <span class="shell__brand">
+      <mat-icon aria-hidden="true">text_fields</mat-icon>
+      <span class="shell__title">TextTools</span>
+    </span>
+    <span class="shell__spacer"></span>
+    <button
+      matButton="outlined"
+      class="shell__search"
+      (click)="ui.openPalette()"
+      matTooltip="Command palette (Ctrl+K)"
+      aria-label="Open command palette"
+      aria-keyshortcuts="Control+K"
+    >
+      <mat-icon>search</mat-icon>
+      <span class="shell__search-label">Search tools</span>
+      <span class="shell__search-key" aria-hidden="true">Ctrl K</span>
+    </button>
+    <button
+      matIconButton
+      [matMenuTriggerFor]="themeMenu"
+      [matTooltip]="themeTooltip()"
+      [attr.aria-label]="themeTooltip() + '. Change theme.'"
+    >
+      <mat-icon>{{ themeIcon() }}</mat-icon>
+    </button>
+    <mat-menu #themeMenu="matMenu">
+      @for (option of themeOptions; track option.value) {
+        <button
+          mat-menu-item
+          (click)="theme.set(option.value)"
+          [attr.aria-current]="theme.preference() === option.value ? 'true' : null"
+        >
+          <mat-icon>{{ option.icon }}</mat-icon>
+          <span>{{ option.label }}</span>
+          @if (theme.preference() === option.value) {
+            <mat-icon class="shell__theme-check" aria-hidden="true">check</mat-icon>
+          }
+        </button>
+      }
+    </mat-menu>
+  </mat-toolbar>
+
+  <mat-sidenav-container class="shell__body">
+    <mat-sidenav
+      id="app-sidebar"
+      class="shell__drawer"
+      mode="side"
+      [opened]="ui.sidebarOpen()"
+      (openedChange)="ui.setSidebar($event)"
+    >
+      <nav class="shell__sidebar" aria-label="Tools and history">
+        @defer (on idle) {
+          <app-history-panel />
+        } @placeholder {
+          <p class="shell__sidebar-hint">Loading history…</p>
+        }
+      </nav>
+    </mat-sidenav>
+    <mat-sidenav-content class="shell__content">
+      <main class="shell__main">
+        <ng-content />
+      </main>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+
+  <footer class="shell__footer">
+    <span>TextTools</span>
+    <span>Runs entirely in your browser</span>
+  </footer>
+
+  @defer (when ui.paletteOpen(); prefetch on idle) {
+    <app-command-palette />
+  }
+</div>

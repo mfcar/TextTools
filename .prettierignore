@@ -1,0 +1,17 @@
+# Build output
+/dist
+/.angular
+/coverage
+
+# Dependencies
+/node_modules
+
+# Assets / generated
+/public
+package-lock.json
+
+# Legacy files pending removal (Phase 12 cleanup)
+/cypress
+cypress.json
+tslint.json
+.travis.yml
