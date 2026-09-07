@@ -103,4 +103,29 @@ describe('HistoryPanel', () => {
     expect(store.entityMap()[id].history).toHaveLength(0);
     expect(store.entityMap()[id].currentContent).toBe('xy');
   });
+
+  it('reverses the displayed rows when sorting newest first', async () => {
+    const id = store.openDocument({ content: '' });
+    await store.applyTool(id, 'append', { s: 'a' });
+    await store.applyTool(id, 'append', { s: 'b' });
+    await flush();
+
+    expect(component['rows']().map((row) => row.index)).toEqual([1, 2]);
+
+    component['toggleSort']();
+    await flush();
+
+    expect(component['rows']().map((row) => row.index)).toEqual([2, 1]);
+  });
+
+  it('branches a history index into a new document', async () => {
+    const id = store.openDocument({ content: '' });
+    await store.applyTool(id, 'append', { s: 'a' });
+    await store.applyTool(id, 'append', { s: 'b' });
+    await flush();
+
+    const branchId = await store.branchFromHistory(id, 1, 'From history');
+    expect(store.entityMap()[branchId!].currentContent).toBe('a');
+    expect(store.entityMap()[branchId!].name).toBe('From history');
+  });
 });

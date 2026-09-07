@@ -46,4 +46,10 @@ describe('UiStore', () => {
     store.unregisterShortcut('a');
     expect(store.shortcuts().map((s) => s.id)).toEqual(['b']);
   });
+
+  it('toggles the history sort order', () => {
+    expect(store.historySortDescending()).toBe(false);
+    store.toggleHistorySort();
+    expect(store.historySortDescending()).toBe(true);
+  });
 });

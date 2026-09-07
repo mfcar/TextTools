@@ -1,0 +1,40 @@
+.shortcuts__category {
+  margin: 1rem 0 0.5rem;
+  font: var(--mat-sys-title-small);
+}
+
+.shortcuts__category:first-child {
+  margin-block-start: 0;
+}
+
+.shortcuts__list {
+  margin: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.shortcuts__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.shortcuts__row dt {
+  color: var(--mat-sys-on-surface);
+}
+
+.shortcuts__row dd {
+  margin: 0;
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+.shortcuts__row kbd {
+  padding: 0.1rem 0.4rem;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: var(--mat-sys-corner-extra-small);
+  background-color: var(--mat-sys-surface-container-high);
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-label-small);
+}

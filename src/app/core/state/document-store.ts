@@ -49,6 +49,11 @@ export const DocumentStore = signalStore(
       const id = store.activeId();
       return id ? (store.entityMap()[id] ?? null) : null;
     }),
+    orderedDocuments: computed<readonly TextDocument[]>(() =>
+      [...store.entities()].sort(
+        (a, b) => Number(b.pinned) - Number(a.pinned) || a.order - b.order,
+      ),
+    ),
   })),
   withComputed((store) => ({
     canUndo: computed(() => (store.activeDocument()?.cursor ?? 0) > 0),
@@ -63,6 +68,27 @@ export const DocumentStore = signalStore(
     const config = inject(HISTORY_CONFIG);
     const run: StepRunner = (step, input) => executor.execute(step.toolId, input, step.params);
 
+    const open = (options: OpenDocumentOptions = {}): string => {
+      const id = newId();
+      const untitledCount = store.untitledCount() + 1;
+      const content = options.content ?? '';
+      const nextOrder = store.entities().reduce((max, doc) => Math.max(max, doc.order), -1) + 1;
+      const document: TextDocument = {
+        id,
+        name: options.name ?? `Untitled ${untitledCount}`,
+        baseContent: content,
+        currentContent: content,
+        history: [],
+        cursor: 0,
+        checkpoints: [],
+        createdAt: Date.now(),
+        order: nextOrder,
+        pinned: false,
+      };
+      patchState(store, addEntity(document), { activeId: id, untitledCount });
+      return id;
+    };
+
     return {
       hydrate(documents: readonly TextDocument[], activeId: string | null): void {
         const known = new Set(documents.map((doc) => doc.id));
@@ -71,28 +97,19 @@ export const DocumentStore = signalStore(
           const match = /^Untitled (\d+)$/.exec(doc.name);
           return match ? Math.max(max, Number(match[1])) : max;
         }, 0);
-        patchState(store, setAllEntities(documents as TextDocument[]), {
+        const normalized = documents.map((doc, index) => ({
+          ...doc,
+          order: doc.order ?? index,
+          pinned: doc.pinned ?? false,
+        }));
+        patchState(store, setAllEntities(normalized), {
           activeId: nextActive,
           untitledCount,
         });
       },
 
       openDocument(options: OpenDocumentOptions = {}): string {
-        const id = newId();
-        const untitledCount = store.untitledCount() + 1;
-        const content = options.content ?? '';
-        const document: TextDocument = {
-          id,
-          name: options.name ?? `Untitled ${untitledCount}`,
-          baseContent: content,
-          currentContent: content,
-          history: [],
-          cursor: 0,
-          checkpoints: [],
-          createdAt: Date.now(),
-        };
-        patchState(store, addEntity(document), { activeId: id, untitledCount });
-        return id;
+        return open(options);
       },
 
       setActive(id: string): void {
@@ -281,6 +298,36 @@ export const DocumentStore = signalStore(
             },
           }),
         );
+      },
+
+      togglePin(id: string): void {
+        const doc = store.entityMap()[id];
+        if (!doc) {
+          return;
+        }
+        patchState(store, updateEntity({ id, changes: { pinned: !doc.pinned } }));
+      },
+
+      reorderDocuments(orderedIds: readonly string[]): void {
+        for (const [index, id] of orderedIds.entries()) {
+          if (store.entityMap()[id]) {
+            patchState(store, updateEntity({ id, changes: { order: index } }));
+          }
+        }
+      },
+
+      async branchFromHistory(
+        id: string,
+        targetIndex: number,
+        name: string,
+      ): Promise<string | null> {
+        const doc = store.entityMap()[id];
+        if (!doc) {
+          return null;
+        }
+        const clamped = Math.max(0, Math.min(targetIndex, doc.history.length));
+        const content = await replayTo(run, doc.baseContent, doc.checkpoints, doc.history, clamped);
+        return open({ name, content });
       },
     };
   }),

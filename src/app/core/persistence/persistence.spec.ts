@@ -27,6 +27,8 @@ function makeDoc(overrides: Partial<TextDocument> = {}): TextDocument {
     cursor: 0,
     checkpoints: [],
     createdAt: 1000,
+    order: 0,
+    pinned: false,
     ...overrides,
   };
 }

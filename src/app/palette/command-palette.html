@@ -121,6 +121,7 @@
           role="listbox"
           aria-label="Tools"
           itemSize="60"
+          [style.block-size]="listHeight()"
         >
           <button
             *cdkVirtualFor="let tool of results(); let i = index"
@@ -136,8 +137,16 @@
           >
             <mat-icon aria-hidden="true">{{ tool.icon }}</mat-icon>
             <span class="palette__item-text">
-              <span class="palette__item-name">{{ tool.name }}</span>
-              <span class="palette__item-desc">{{ tool.description }}</span>
+              <span class="palette__item-name">
+                @for (segment of highlight(tool.name); track $index) {
+                  <span [class.palette__mark]="segment.match">{{ segment.text }}</span>
+                }
+              </span>
+              <span class="palette__item-desc">
+                @for (segment of highlight(tool.description); track $index) {
+                  <span [class.palette__mark]="segment.match">{{ segment.text }}</span>
+                }
+              </span>
             </span>
             <span class="palette__item-cat">{{ tool.category }}</span>
           </button>

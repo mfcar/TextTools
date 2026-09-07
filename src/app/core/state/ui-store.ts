@@ -11,12 +11,14 @@ interface UiState {
   readonly sidebarOpen: boolean;
   readonly paletteOpen: boolean;
   readonly shortcuts: readonly KeyboardShortcut[];
+  readonly historySortDescending: boolean;
 }
 
 const initialState: UiState = {
   sidebarOpen: true,
   paletteOpen: false,
   shortcuts: [],
+  historySortDescending: false,
 };
 
 export const UiStore = signalStore(
@@ -47,6 +49,9 @@ export const UiStore = signalStore(
       patchState(store, (state) => ({
         shortcuts: state.shortcuts.filter((existing) => existing.id !== id),
       }));
+    },
+    toggleHistorySort(): void {
+      patchState(store, (state) => ({ historySortDescending: !state.historySortDescending }));
     },
   })),
 );

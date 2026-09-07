@@ -21,4 +21,6 @@ export interface TextDocument {
   readonly cursor: number;
   readonly checkpoints: readonly Checkpoint[];
   readonly createdAt: number;
+  readonly order: number;
+  readonly pinned: boolean;
 }

@@ -27,6 +27,16 @@
       <span class="shell__search-label">Search tools</span>
       <span class="shell__search-key" aria-hidden="true">Ctrl K</span>
     </button>
+    <span class="shell__spacer"></span>
+    <button
+      matIconButton
+      (click)="openShortcuts()"
+      matTooltip="Keyboard shortcuts (Ctrl+/)"
+      aria-label="Show keyboard shortcuts"
+      aria-keyshortcuts="Control+/"
+    >
+      <mat-icon>keyboard</mat-icon>
+    </button>
     <button
       matIconButton
       [matMenuTriggerFor]="themeMenu"

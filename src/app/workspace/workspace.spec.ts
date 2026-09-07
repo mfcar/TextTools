@@ -76,6 +76,124 @@ describe('Workspace', () => {
     expect(store.entities().length).toBe(1);
   });
 
+  it('pins a document so it sorts first', () => {
+    const first = store.entities()[0].id;
+    fixture.componentInstance['newTab']();
+    const second = store.activeId()!;
+    fixture.detectChanges();
+
+    fixture.componentInstance['togglePin'](second);
+    fixture.detectChanges();
+
+    expect(store.orderedDocuments().map((doc) => doc.id)).toEqual([second, first]);
+  });
+
+  it('duplicates a document with its content', () => {
+    const id = store.activeId()!;
+    store.setContent(id, 'body');
+    const doc = store.entityMap()[id];
+
+    fixture.componentInstance['duplicate'](doc);
+
+    expect(store.entities().length).toBe(2);
+    const copy = store.entities().find((d) => d.name === `${doc.name} copy`);
+    expect(copy?.currentContent).toBe('body');
+  });
+
+  it('closes the other documents', () => {
+    const keep = store.activeId()!;
+    fixture.componentInstance['newTab']();
+    fixture.componentInstance['newTab']();
+    fixture.detectChanges();
+
+    fixture.componentInstance['closeOthers'](keep);
+    fixture.detectChanges();
+
+    expect(store.entities().map((doc) => doc.id)).toEqual([keep]);
+  });
+
+  it('keeps pinned documents when closing others', () => {
+    const keep = store.activeId()!;
+    fixture.componentInstance['newTab']();
+    const pinned = store.activeId()!;
+    fixture.componentInstance['newTab']();
+    fixture.componentInstance['togglePin'](pinned);
+    fixture.detectChanges();
+
+    fixture.componentInstance['closeOthers'](keep);
+    fixture.detectChanges();
+
+    expect(store.entityMap()[keep]).toBeTruthy();
+    expect(store.entityMap()[pinned]).toBeTruthy();
+    expect(store.entities().length).toBe(2);
+  });
+
+  it('closes tabs to the right but keeps pinned ones', () => {
+    const first = store.activeId()!;
+    fixture.componentInstance['newTab']();
+    const pinned = store.activeId()!;
+    fixture.componentInstance['newTab']();
+    const last = store.activeId()!;
+    fixture.componentInstance['togglePin'](pinned);
+    fixture.detectChanges();
+
+    fixture.componentInstance['closeToRight'](first);
+    fixture.detectChanges();
+
+    expect(store.entityMap()[first]).toBeTruthy();
+    expect(store.entityMap()[pinned]).toBeTruthy();
+    expect(store.entityMap()[last]).toBeFalsy();
+  });
+
+  it('closes tabs to the left but keeps pinned ones', () => {
+    const first = store.activeId()!;
+    fixture.componentInstance['newTab']();
+    const pinned = store.activeId()!;
+    fixture.componentInstance['newTab']();
+    const last = store.activeId()!;
+    fixture.componentInstance['togglePin'](pinned);
+    fixture.detectChanges();
+
+    fixture.componentInstance['closeToLeft'](last);
+    fixture.detectChanges();
+
+    expect(store.entityMap()[last]).toBeTruthy();
+    expect(store.entityMap()[pinned]).toBeTruthy();
+    expect(store.entityMap()[first]).toBeFalsy();
+  });
+
+  it('filters the tab list by name and activates a chosen document', () => {
+    const first = store.activeId()!;
+    store.renameDocument(first, 'Alpha');
+    fixture.componentInstance['newTab']();
+    const second = store.activeId()!;
+    store.renameDocument(second, 'Beta');
+    fixture.detectChanges();
+
+    fixture.componentInstance['toggleTabList']();
+    fixture.componentInstance['tabFilter'].set('alp');
+    fixture.detectChanges();
+
+    const filtered = fixture.componentInstance['filteredDocuments']();
+    expect(filtered.map((doc) => doc.name)).toEqual(['Alpha']);
+
+    fixture.componentInstance['selectFromList'](first);
+    fixture.detectChanges();
+
+    expect(store.activeId()).toBe(first);
+    expect(fixture.componentInstance['tabListOpen']()).toBe(false);
+  });
+
+  it('renders the tab list panel only while open', () => {
+    fixture.componentInstance['toggleTabList']();
+    fixture.detectChanges();
+    expect(document.querySelector('.workspace__tablist-panel')).toBeTruthy();
+
+    fixture.componentInstance['closeTabList']();
+    fixture.detectChanges();
+    expect(document.querySelector('.workspace__tablist-panel')).toBeNull();
+  });
+
   it('writes edits back to the active document', () => {
     const id = store.activeId()!;
     fixture.componentInstance['onEdit'](id, 'hello world');
