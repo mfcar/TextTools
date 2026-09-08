@@ -4,8 +4,8 @@ import { ToolRegistry, provideTools } from '../core/tools/tool-registry';
 import { ALL_TOOLS } from './index';
 
 describe('ALL_TOOLS catalog', () => {
-  it('contains the 24 ported tools', () => {
-    expect(ALL_TOOLS).toHaveLength(24);
+  it('contains every built-in tool', () => {
+    expect(ALL_TOOLS).toHaveLength(51);
   });
 
   it('has unique ids', () => {
@@ -17,7 +17,14 @@ describe('ALL_TOOLS catalog', () => {
     TestBed.configureTestingModule({ providers: [provideTools(...ALL_TOOLS)] });
     const registry = TestBed.inject(ToolRegistry);
 
-    expect(registry.all()).toHaveLength(24);
-    expect(registry.categories()).toEqual(['Case', 'Encoding', 'Text']);
+    expect(registry.all()).toHaveLength(51);
+    expect(registry.categories()).toEqual([
+      'Case',
+      'Conversion',
+      'Crypto',
+      'Encoding',
+      'Format',
+      'Text',
+    ]);
   });
 });
