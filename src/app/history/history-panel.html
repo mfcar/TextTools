@@ -22,6 +22,16 @@
       </button>
       <button
         matIconButton
+        (click)="toggleSort()"
+        [disabled]="!document() || steps().length === 0"
+        [matTooltip]="sortDescending() ? 'Sort oldest first' : 'Sort newest first'"
+        [attr.aria-label]="sortDescending() ? 'Sort oldest first' : 'Sort newest first'"
+        [attr.aria-pressed]="sortDescending()"
+      >
+        <mat-icon>{{ sortDescending() ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+      </button>
+      <button
+        matIconButton
         (click)="clear()"
         [disabled]="!document() || steps().length === 0"
         matTooltip="Clear history"
@@ -33,43 +43,71 @@
   </header>
 
   @if (document()) {
-    <ol class="history__list" aria-label="Applied steps">
-      <li>
-        <button
-          type="button"
-          class="history__step"
-          [class.history__step--active]="cursor() === 0"
-          [attr.aria-current]="cursor() === 0 ? 'step' : null"
-          (click)="goTo(0)"
-        >
-          <mat-icon class="history__step-icon" aria-hidden="true">flag</mat-icon>
-          <span class="history__step-name">Original text</span>
-        </button>
-      </li>
-    </ol>
+    <ng-template #baseline>
+      <ol class="history__list" aria-label="Original text">
+        <li class="history__row">
+          <button
+            type="button"
+            class="history__step"
+            [class.history__step--active]="cursor() === 0"
+            [attr.aria-current]="cursor() === 0 ? 'step' : null"
+            (click)="goTo(0)"
+          >
+            <mat-icon class="history__step-icon" aria-hidden="true">flag</mat-icon>
+            <span class="history__step-name">Original text</span>
+          </button>
+          <button
+            matIconButton
+            class="history__branch"
+            (click)="branch(0)"
+            matTooltip="Branch into a separate document"
+            aria-label="Branch from the original text"
+          >
+            <mat-icon>call_split</mat-icon>
+          </button>
+        </li>
+      </ol>
+    </ng-template>
+
+    @if (!sortDescending()) {
+      <ng-container [ngTemplateOutlet]="baseline" />
+    }
 
     @if (steps().length) {
       <cdk-virtual-scroll-viewport class="history__scroll" itemSize="64">
         <ol class="history__list">
-          <li *cdkVirtualFor="let step of steps(); let i = index">
+          <li class="history__row" *cdkVirtualFor="let row of rows()">
             <button
               type="button"
               class="history__step"
-              [class.history__step--active]="cursor() === i + 1"
-              [attr.aria-current]="cursor() === i + 1 ? 'step' : null"
-              (click)="goTo(i + 1)"
+              [class.history__step--active]="cursor() === row.index"
+              [attr.aria-current]="cursor() === row.index ? 'step' : null"
+              (click)="goTo(row.index)"
             >
-              <span class="history__step-index">{{ i + 1 }}</span>
+              <span class="history__step-index">{{ row.index }}</span>
               <span class="history__step-text">
-                <span class="history__step-name">{{ step.toolName }}</span>
-                <span class="history__step-time">{{ step.at | date: 'shortTime' }}</span>
+                <span class="history__step-name">{{ row.toolName }}</span>
+                <span class="history__step-time">{{ row.at | date: 'shortTime' }}</span>
               </span>
+            </button>
+            <button
+              matIconButton
+              class="history__branch"
+              (click)="branch(row.index)"
+              [matTooltip]="'Branch into a separate document after ' + row.toolName"
+              [attr.aria-label]="'Branch from ' + row.toolName"
+            >
+              <mat-icon>call_split</mat-icon>
             </button>
           </li>
         </ol>
       </cdk-virtual-scroll-viewport>
     } @else {
       <p class="history__empty">No steps yet. Run a tool to build history.</p>
+    }
+
+    @if (sortDescending()) {
+      <ng-container [ngTemplateOutlet]="baseline" />
     }
   } @else {
     <p class="history__empty">Open a document to see its history.</p>

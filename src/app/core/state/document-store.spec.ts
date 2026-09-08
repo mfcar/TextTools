@@ -268,6 +268,75 @@ describe('DocumentStore — history cap and clearing', () => {
   });
 });
 
+describe('DocumentStore — ordering and pinning', () => {
+  let store: InstanceType<typeof DocumentStore>;
+
+  beforeEach(() => {
+    store = setup();
+  });
+
+  it('assigns increasing order and sorts pinned documents first', () => {
+    const a = store.openDocument();
+    const b = store.openDocument();
+    const c = store.openDocument();
+
+    expect(store.orderedDocuments().map((doc) => doc.id)).toEqual([a, b, c]);
+
+    store.togglePin(c);
+    expect(store.orderedDocuments().map((doc) => doc.id)).toEqual([c, a, b]);
+  });
+
+  it('reorders documents by an explicit id list', () => {
+    const a = store.openDocument();
+    const b = store.openDocument();
+    const c = store.openDocument();
+
+    store.reorderDocuments([c, a, b]);
+    expect(store.orderedDocuments().map((doc) => doc.id)).toEqual([c, a, b]);
+  });
+
+  it('backfills order and pinned when hydrating legacy documents', () => {
+    const legacy = {
+      id: 'legacy',
+      name: 'Legacy',
+      baseContent: '',
+      currentContent: '',
+      history: [],
+      cursor: 0,
+      checkpoints: [],
+      createdAt: 1,
+    } as unknown as import('./models').TextDocument;
+
+    store.hydrate([legacy], 'legacy');
+    const doc = store.entityMap()['legacy'];
+    expect(doc.order).toBe(0);
+    expect(doc.pinned).toBe(false);
+  });
+});
+
+describe('DocumentStore — branch from history', () => {
+  it('creates a new document from content at a history index', async () => {
+    const store = setup();
+    const id = store.openDocument({ content: '' });
+    await store.applyTool(id, 'append', { s: 'a' });
+    await store.applyTool(id, 'append', { s: 'b' });
+
+    const branchId = await store.branchFromHistory(id, 1, 'Branch');
+    expect(branchId).not.toBeNull();
+    const branch = store.entityMap()[branchId!];
+    expect(branch.name).toBe('Branch');
+    expect(branch.baseContent).toBe('a');
+    expect(branch.currentContent).toBe('a');
+    expect(branch.history).toHaveLength(0);
+    expect(store.activeId()).toBe(branchId);
+  });
+
+  it('returns null for an unknown document', async () => {
+    const store = setup();
+    expect(await store.branchFromHistory('missing', 0, 'x')).toBeNull();
+  });
+});
+
 describe('DocumentStore — manual edits', () => {
   it('resets the operation history on a hand edit', async () => {
     const store = setup();

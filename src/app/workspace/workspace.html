@@ -1,40 +1,165 @@
 <div class="workspace">
-  <div class="workspace__tabs" role="toolbar" aria-label="Open documents">
-    @for (doc of documents(); track doc.id) {
-      <div class="workspace__tab" [class.workspace__tab--active]="doc.id === activeId()">
-        @if (renamingId() === doc.id) {
+  <div class="workspace__tabbar" role="toolbar" aria-label="Open documents">
+    <div class="workspace__tablist">
+      <button
+        matIconButton
+        cdkOverlayOrigin
+        #tabListOrigin="cdkOverlayOrigin"
+        (click)="toggleTabList()"
+        [attr.aria-expanded]="tabListOpen()"
+        aria-haspopup="dialog"
+        aria-label="All documents"
+        matTooltip="All documents"
+      >
+        <mat-icon>expand_more</mat-icon>
+      </button>
+      <ng-template
+        cdkConnectedOverlay
+        [cdkConnectedOverlayOrigin]="tabListOrigin"
+        [cdkConnectedOverlayOpen]="tabListOpen()"
+        [cdkConnectedOverlayHasBackdrop]="true"
+        cdkConnectedOverlayBackdropClass="cdk-overlay-transparent-backdrop"
+        (backdropClick)="closeTabList()"
+        (overlayKeydown)="onOverlayKeydown($event)"
+      >
+        <div class="workspace__tablist-panel" role="dialog" aria-label="All documents">
           <input
-            class="workspace__tab-input"
+            class="workspace__tablist-search"
             type="text"
-            [attr.aria-label]="'Rename ' + doc.name"
-            [value]="draftName()"
-            (input)="onRenameInput($event)"
-            (keydown)="onRenameKeydown($event)"
-            (blur)="commitRename()"
+            aria-label="Search documents"
+            placeholder="Search documents"
+            [value]="tabFilter()"
+            (input)="onTabFilter($event)"
             appAutofocus
           />
-        } @else {
-          <button
-            type="button"
-            class="workspace__tab-label"
-            (click)="select(doc.id)"
-            (dblclick)="startRename(doc.id, doc.name)"
-            [attr.aria-current]="doc.id === activeId() ? 'true' : null"
-          >
-            {{ doc.name }}
-          </button>
-          <button
-            matIconButton
-            class="workspace__tab-close"
-            (click)="close(doc.id)"
-            [attr.aria-label]="'Close ' + doc.name"
-            matTooltip="Close"
-          >
-            <mat-icon>close</mat-icon>
-          </button>
-        }
-      </div>
-    }
+          <ul class="workspace__tablist-items">
+            @for (doc of filteredDocuments(); track doc.id) {
+              <li>
+                <button
+                  type="button"
+                  class="workspace__tablist-item"
+                  [class.workspace__tablist-item--active]="doc.id === activeId()"
+                  [attr.aria-current]="doc.id === activeId() ? 'true' : null"
+                  (click)="selectFromList(doc.id)"
+                >
+                  {{ doc.name }}
+                </button>
+              </li>
+            } @empty {
+              <li>
+                <p class="workspace__tablist-empty">No documents match.</p>
+              </li>
+            }
+          </ul>
+        </div>
+      </ng-template>
+    </div>
+    <div
+      class="workspace__tabs"
+      cdkDropList
+      cdkDropListOrientation="horizontal"
+      (cdkDropListDropped)="onDrop($event)"
+      (wheel)="onTabsWheel($event)"
+    >
+      @for (doc of documents(); track doc.id) {
+        <div
+          class="workspace__tab"
+          [class.workspace__tab--active]="doc.id === activeId()"
+          [class.workspace__tab--pinned]="doc.pinned"
+          cdkDrag
+          [cdkDragDisabled]="renamingId() === doc.id"
+          [cdkContextMenuTriggerFor]="tabMenu"
+        >
+          @if (renamingId() === doc.id) {
+            <input
+              class="workspace__tab-input"
+              type="text"
+              [attr.aria-label]="'Rename ' + doc.name"
+              [value]="draftName()"
+              (input)="onRenameInput($event)"
+              (keydown)="onRenameKeydown($event)"
+              (blur)="commitRename()"
+              appAutofocus
+            />
+          } @else {
+            @if (doc.pinned) {
+              <mat-icon class="workspace__tab-pin" aria-hidden="true">push_pin</mat-icon>
+            }
+            <button
+              type="button"
+              class="workspace__tab-label"
+              (click)="select(doc.id)"
+              (dblclick)="startRename(doc.id, doc.name)"
+              [attr.aria-current]="doc.id === activeId() ? 'true' : null"
+              [title]="doc.name"
+            >
+              {{ doc.name }}
+            </button>
+            <button
+              matIconButton
+              class="workspace__tab-close"
+              (click)="close(doc.id)"
+              [attr.aria-label]="'Close ' + doc.name"
+              matTooltip="Close"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+        </div>
+        <ng-template #tabMenu>
+          <div class="workspace__menu" cdkMenu>
+            <button
+              class="workspace__menu-item"
+              cdkMenuItem
+              (cdkMenuItemTriggered)="startRename(doc.id, doc.name)"
+            >
+              Rename
+            </button>
+            <button
+              class="workspace__menu-item"
+              cdkMenuItem
+              (cdkMenuItemTriggered)="togglePin(doc.id)"
+            >
+              {{ doc.pinned ? 'Unpin' : 'Pin' }}
+            </button>
+            <button
+              class="workspace__menu-item"
+              cdkMenuItem
+              (cdkMenuItemTriggered)="duplicate(doc)"
+            >
+              Duplicate
+            </button>
+            <button class="workspace__menu-item" cdkMenuItem (cdkMenuItemTriggered)="close(doc.id)">
+              Close
+            </button>
+            <button
+              class="workspace__menu-item"
+              cdkMenuItem
+              [cdkMenuItemDisabled]="!hasClosableOthers(doc.id)"
+              (cdkMenuItemTriggered)="closeOthers(doc.id)"
+            >
+              Close others
+            </button>
+            <button
+              class="workspace__menu-item"
+              cdkMenuItem
+              [cdkMenuItemDisabled]="!hasClosableToLeft(doc.id)"
+              (cdkMenuItemTriggered)="closeToLeft(doc.id)"
+            >
+              Close tabs to the left
+            </button>
+            <button
+              class="workspace__menu-item"
+              cdkMenuItem
+              [cdkMenuItemDisabled]="!hasClosableToRight(doc.id)"
+              (cdkMenuItemTriggered)="closeToRight(doc.id)"
+            >
+              Close tabs to the right
+            </button>
+          </div>
+        </ng-template>
+      }
+    </div>
     <button
       matIconButton
       class="workspace__new"

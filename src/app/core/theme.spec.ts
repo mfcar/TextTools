@@ -37,4 +37,54 @@ describe('Theme', () => {
     service.cycle();
     expect(service.preference()).toBe('system');
   });
+
+  it('should resolve an explicit preference regardless of the system scheme', () => {
+    service.set('light');
+    expect(service.resolved()).toBe('light');
+    service.set('dark');
+    expect(service.resolved()).toBe('dark');
+  });
+});
+
+describe('Theme — system scheme', () => {
+  let changeHandler: ((event: MediaQueryListEvent) => void) | null;
+
+  beforeEach(() => {
+    localStorage.clear();
+    changeHandler = null;
+    vi.stubGlobal('matchMedia', (query: string) => ({
+      matches: true,
+      media: query,
+      onchange: null,
+      addEventListener: (_type: string, handler: (event: MediaQueryListEvent) => void) => {
+        changeHandler = handler;
+      },
+      removeEventListener: () => {
+        changeHandler = null;
+      },
+      addListener: () => undefined,
+      removeListener: () => undefined,
+      dispatchEvent: () => false,
+    }));
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('resolves the system preference from prefers-color-scheme', () => {
+    TestBed.configureTestingModule({});
+    const service = TestBed.inject(Theme);
+    expect(service.preference()).toBe('system');
+    expect(service.resolved()).toBe('dark');
+  });
+
+  it('reacts when the OS scheme changes while system is selected', () => {
+    TestBed.configureTestingModule({});
+    const service = TestBed.inject(Theme);
+    expect(service.resolved()).toBe('dark');
+
+    changeHandler?.({ matches: false } as MediaQueryListEvent);
+    expect(service.resolved()).toBe('light');
+  });
 });

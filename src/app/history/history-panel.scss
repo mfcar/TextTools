@@ -34,11 +34,28 @@
   min-block-size: 8rem;
 }
 
+.history__row {
+  display: flex;
+  align-items: center;
+  block-size: 64px;
+}
+
+.history__branch {
+  flex: 0 0 auto;
+  opacity: 0;
+}
+
+.history__row:hover .history__branch,
+.history__branch:focus-visible {
+  opacity: 1;
+}
+
 .history__step {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  inline-size: 100%;
+  flex: 1 1 auto;
+  min-inline-size: 0;
   block-size: 64px;
   padding: 0 0.5rem;
   border: none;

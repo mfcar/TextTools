@@ -40,8 +40,7 @@
 }
 
 .palette__list {
-  flex: 1 1 auto;
-  block-size: 20rem;
+  flex: 0 1 auto;
 }
 
 .palette__item {
@@ -72,6 +71,14 @@
 
 .palette__item-name {
   font: var(--mat-sys-body-large);
+}
+
+.palette__mark {
+  padding-inline: 0.05rem;
+  border-radius: var(--mat-sys-corner-extra-small);
+  background-color: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+  font-weight: 600;
 }
 
 .palette__item-desc {

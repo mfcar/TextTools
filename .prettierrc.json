@@ -5,6 +5,7 @@
   "semi": true,
   "bracketSpacing": true,
   "arrowParens": "always",
+  "endOfLine": "auto",
   "overrides": [
     {
       "files": "*.html",

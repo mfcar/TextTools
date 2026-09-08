@@ -14,6 +14,10 @@ import { ParamSchema, ParamValue, SelectOption, ToolParams } from '../core/tools
 import { ToolDefinition } from '../core/tools/tool';
 import { ToolRegistry } from '../core/tools/tool-registry';
 import { validateParams } from '../core/tools/validate-params';
+import { HighlightSegment, highlightMatches } from './highlight';
+
+const ITEM_SIZE = 60;
+const MAX_VISIBLE_ITEMS = 8;
 
 function defaultsOf(params: readonly ParamSchema[]): ToolParams {
   const values: ToolParams = {};
@@ -56,6 +60,9 @@ export class CommandPalette {
     const list = this.results();
     return list.length === 0 ? null : list[Math.min(this.activeIndex(), list.length - 1)];
   });
+  protected readonly listHeight = computed(
+    () => `min(${Math.min(this.results().length, MAX_VISIBLE_ITEMS) * ITEM_SIZE}px, 60vh)`,
+  );
 
   private readonly paramValues = signal<ToolParams>({});
   protected readonly validation = computed(() => {
@@ -166,6 +173,10 @@ export class CommandPalette {
 
   protected paramBool(key: string): boolean {
     return this.paramValues()[key] === true;
+  }
+
+  protected highlight(text: string): readonly HighlightSegment[] {
+    return highlightMatches(text, this.query());
   }
 
   protected selectOptions(param: ParamSchema): readonly SelectOption[] {

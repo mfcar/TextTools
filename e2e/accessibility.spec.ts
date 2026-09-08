@@ -22,4 +22,43 @@ test.describe('Accessibility', () => {
       .analyze();
     expect(results.violations).toEqual([]);
   });
+
+  test('shortcuts help dialog has no WCAG A/AA violations', async ({ page }) => {
+    await openApp(page);
+    await page.keyboard.press('ControlOrMeta+/');
+    await expect(page.getByRole('dialog', { name: 'Keyboard shortcuts' })).toBeVisible();
+
+    const results = await new AxeBuilder({ page })
+      .withTags(WCAG_TAGS)
+      .include('[role="dialog"]')
+      .analyze();
+    expect(results.violations).toEqual([]);
+  });
+
+  test('tab list dropdown has no WCAG A/AA violations', async ({ page }) => {
+    await openApp(page);
+    await page.getByRole('button', { name: 'All documents' }).click();
+    await expect(page.getByRole('dialog', { name: 'All documents' })).toBeVisible();
+
+    const results = await new AxeBuilder({ page })
+      .withTags(WCAG_TAGS)
+      .include('[role="dialog"]')
+      .analyze();
+    expect(results.violations).toEqual([]);
+  });
+
+  test('tab context menu has no WCAG A/AA violations', async ({ page }) => {
+    await openApp(page);
+    await page
+      .getByRole('toolbar', { name: 'Open documents' })
+      .getByRole('button', { name: 'Untitled 1', exact: true })
+      .click({ button: 'right' });
+    await expect(page.getByRole('menuitem', { name: 'Pin' })).toBeVisible();
+
+    const results = await new AxeBuilder({ page })
+      .withTags(WCAG_TAGS)
+      .include('[role="menu"]')
+      .analyze();
+    expect(results.violations).toEqual([]);
+  });
 });
