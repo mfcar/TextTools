@@ -123,10 +123,26 @@ export class Workspace {
       category: 'Documents',
       handler: () => this.closeActive(),
     });
+    this.shortcuts.register({
+      id: 'pin-document',
+      keys: 'Mod+Alt+P',
+      description: 'Pin or unpin the active document',
+      category: 'Documents',
+      handler: () => this.togglePinActive(),
+    });
+    this.shortcuts.register({
+      id: 'compare-document',
+      keys: 'Mod+Alt+D',
+      description: 'Compare the active document with its original text',
+      category: 'Documents',
+      handler: () => this.toggleCompare(),
+    });
     inject(DestroyRef).onDestroy(() => {
       this.shortcuts.unregister('new-document');
       this.shortcuts.unregister('rename-document');
       this.shortcuts.unregister('close-document');
+      this.shortcuts.unregister('pin-document');
+      this.shortcuts.unregister('compare-document');
     });
   }
 
@@ -198,6 +214,21 @@ export class Workspace {
 
   protected closeCompare(): void {
     this.compare.set(null);
+  }
+
+  protected toggleCompare(): void {
+    if (this.compare()) {
+      this.closeCompare();
+    } else {
+      this.compareWithOriginal();
+    }
+  }
+
+  protected togglePinActive(): void {
+    const doc = this.store.activeDocument();
+    if (doc) {
+      this.store.togglePin(doc.id);
+    }
   }
 
   protected isPreviewing(id: string): boolean {

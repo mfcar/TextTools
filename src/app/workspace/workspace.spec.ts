@@ -88,6 +88,28 @@ describe('Workspace', () => {
     expect(store.orderedDocuments().map((doc) => doc.id)).toEqual([second, first]);
   });
 
+  it('toggles the pin state of the active document', () => {
+    const id = store.activeId()!;
+    expect(store.entityMap()[id].pinned).toBeFalsy();
+
+    fixture.componentInstance['togglePinActive']();
+    expect(store.entityMap()[id].pinned).toBe(true);
+
+    fixture.componentInstance['togglePinActive']();
+    expect(store.entityMap()[id].pinned).toBe(false);
+  });
+
+  it('toggles a comparison with the original text on and off', () => {
+    const id = store.activeId()!;
+    store.setContent(id, 'edited');
+
+    fixture.componentInstance['toggleCompare']();
+    expect(fixture.componentInstance['compare']()).not.toBeNull();
+
+    fixture.componentInstance['toggleCompare']();
+    expect(fixture.componentInstance['compare']()).toBeNull();
+  });
+
   it('duplicates a document with its content', () => {
     const id = store.activeId()!;
     store.setContent(id, 'body');

@@ -21,6 +21,14 @@ html {
   );
 }
 
+:root {
+  --motion-duration-fast: 140ms;
+  --motion-duration: 240ms;
+  --motion-duration-slow: 360ms;
+  --motion-ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --motion-ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 html,
 body {
   height: 100%;
@@ -31,4 +39,126 @@ body {
   background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
   font: var(--mat-sys-body-medium);
+  transition:
+    background-color var(--motion-duration-slow) var(--motion-ease-standard),
+    color var(--motion-duration-slow) var(--motion-ease-standard);
+}
+
+@keyframes motion-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes motion-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes motion-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes motion-tab-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes motion-tab-out {
+  from {
+    opacity: 1;
+    max-inline-size: 20rem;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    max-inline-size: 0;
+    transform: scale(0.8);
+  }
+}
+
+@keyframes motion-pin-in {
+  from {
+    opacity: 0;
+    transform: scale(0.3) rotate(-25deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+
+@keyframes motion-pin-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+}
+
+@keyframes motion-palette-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes motion-palette-out {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.96) translateY(-10px);
+  }
+}
+
+@keyframes motion-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

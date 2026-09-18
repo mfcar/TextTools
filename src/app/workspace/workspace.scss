@@ -12,6 +12,7 @@
   padding: 0.25rem 0.5rem;
   border-block-end: 1px solid var(--mat-sys-outline-variant);
   background-color: var(--mat-sys-surface-container-low);
+  transition: background-color var(--motion-duration-slow) var(--motion-ease-standard);
 }
 
 .workspace__tabs {
@@ -48,6 +49,8 @@
   border-radius: var(--mat-sys-corner-small);
   background-color: var(--mat-sys-surface-container);
   box-shadow: var(--mat-sys-level2);
+  transform-origin: top left;
+  animation: motion-scale-in var(--motion-duration) var(--motion-ease);
 }
 
 .workspace__tablist-search {
@@ -108,11 +111,20 @@
   display: inline-flex;
   align-items: center;
   border-radius: var(--mat-sys-corner-small);
+  animation: motion-tab-in var(--motion-duration) var(--motion-ease);
+  transition: background-color var(--motion-duration-fast) var(--motion-ease-standard);
 }
 
 .workspace__tab--active {
   background-color: var(--mat-sys-secondary-container);
   color: var(--mat-sys-on-secondary-container);
+}
+
+.workspace__tab--leaving {
+  overflow: hidden;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: motion-tab-out var(--motion-duration-fast) var(--motion-ease-standard) forwards;
 }
 
 .workspace__tab-pin {
@@ -121,6 +133,14 @@
   block-size: 1rem;
   margin-inline-start: 0.5rem;
   color: var(--mat-sys-primary);
+}
+
+.workspace__tab-pin--in {
+  animation: motion-pin-in var(--motion-duration) var(--motion-ease);
+}
+
+.workspace__tab-pin--out {
+  animation: motion-pin-out var(--motion-duration-fast) var(--motion-ease-standard);
 }
 
 .cdk-drag-preview {
@@ -134,7 +154,7 @@
 }
 
 .cdk-drag-animating {
-  transition: transform 150ms cubic-bezier(0, 0, 0.2, 1);
+  transition: transform var(--motion-duration) var(--motion-ease);
 }
 
 .workspace__menu {
@@ -194,6 +214,7 @@
   padding: 0.25rem 0.5rem;
   border-block-end: 1px solid var(--mat-sys-outline-variant);
   background-color: var(--mat-sys-surface-container-low);
+  transition: background-color var(--motion-duration-slow) var(--motion-ease-standard);
 }
 
 .workspace__actions-spacer {
@@ -215,12 +236,23 @@
   min-inline-size: 0;
 }
 
+.workspace__editor app-markdown-preview,
+.workspace__editor app-diff-view {
+  animation: motion-fade-in var(--motion-duration) var(--motion-ease-standard);
+}
+
 .workspace__editor-loading {
   flex: 1 1 auto;
 }
 
+.workspace__toggle {
+  transition:
+    background-color var(--motion-duration-fast) var(--motion-ease-standard),
+    color var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
 .workspace__toggle--active {
-  background: var(--mat-sys-secondary-container);
+  background-color: var(--mat-sys-secondary-container);
   color: var(--mat-sys-on-secondary-container);
 }
 
@@ -230,6 +262,7 @@
   gap: 0.75rem;
   padding: 0.35rem 0.75rem;
   border-block-end: 1px solid var(--mat-sys-outline-variant);
+  animation: motion-slide-up var(--motion-duration) var(--motion-ease);
 }
 
 .workspace__compare-label {

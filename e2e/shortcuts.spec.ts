@@ -29,4 +29,20 @@ test.describe('Keyboard shortcuts', () => {
         .getByRole('button', { name: 'Renamed', exact: true }),
     ).toBeVisible();
   });
+
+  test('pins and unpins the active document with Ctrl+Alt+P', async ({ page }) => {
+    await page.keyboard.press('ControlOrMeta+Alt+p');
+    await expect(page.locator('.workspace__tab--pinned')).toHaveCount(1);
+
+    await page.keyboard.press('ControlOrMeta+Alt+p');
+    await expect(page.locator('.workspace__tab--pinned')).toHaveCount(0);
+  });
+
+  test('toggles a comparison with the original text with Ctrl+Alt+D', async ({ page }) => {
+    await page.keyboard.press('ControlOrMeta+Alt+d');
+    await expect(page.getByRole('button', { name: 'Close comparison' })).toBeVisible();
+
+    await page.keyboard.press('ControlOrMeta+Alt+d');
+    await expect(page.getByRole('button', { name: 'Compare document' })).toBeVisible();
+  });
 });

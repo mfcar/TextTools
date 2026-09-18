@@ -6,6 +6,11 @@
   padding: 0;
   background-color: rgb(0 0 0 / 40%);
   cursor: pointer;
+  animation: motion-fade-in var(--motion-duration) var(--motion-ease-standard);
+}
+
+.palette__scrim--out {
+  animation: motion-fade-out var(--motion-duration-fast) var(--motion-ease-standard);
 }
 
 .palette {
@@ -23,6 +28,12 @@
   background-color: var(--mat-sys-surface-container-high);
   color: var(--mat-sys-on-surface);
   box-shadow: var(--mat-sys-level3);
+  transform-origin: top center;
+  animation: motion-palette-in var(--motion-duration-slow) var(--motion-ease);
+}
+
+.palette--out {
+  animation: motion-palette-out var(--motion-duration-fast) var(--motion-ease-standard);
 }
 
 .palette__search {
@@ -55,11 +66,18 @@
   color: inherit;
   text-align: start;
   cursor: pointer;
+  transition:
+    background-color var(--motion-duration-fast) var(--motion-ease-standard),
+    transform var(--motion-duration-fast) var(--motion-ease-standard);
 }
 
 .palette__item--active {
   background-color: var(--mat-sys-secondary-container);
   color: var(--mat-sys-on-secondary-container);
+}
+
+.palette__item:active {
+  transform: scale(0.985);
 }
 
 .palette__item-text {

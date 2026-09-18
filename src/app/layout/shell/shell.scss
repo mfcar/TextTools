@@ -13,6 +13,9 @@
   gap: 0.5rem;
   background-color: var(--mat-sys-surface-container);
   color: var(--mat-sys-on-surface);
+  transition:
+    background-color var(--motion-duration-slow) var(--motion-ease-standard),
+    color var(--motion-duration-slow) var(--motion-ease-standard);
 }
 
 .shell__brand {
@@ -68,6 +71,7 @@
   flex: 1 1 auto;
   min-height: 0;
   background-color: var(--mat-sys-surface);
+  transition: background-color var(--motion-duration-slow) var(--motion-ease-standard);
 }
 
 .shell__drawer {
@@ -107,4 +111,7 @@
   background-color: var(--mat-sys-surface-container);
   color: var(--mat-sys-on-surface-variant);
   font: var(--mat-sys-body-small);
+  transition:
+    background-color var(--motion-duration-slow) var(--motion-ease-standard),
+    color var(--motion-duration-slow) var(--motion-ease-standard);
 }

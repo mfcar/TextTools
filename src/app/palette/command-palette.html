@@ -3,6 +3,7 @@
     type="button"
     class="palette__scrim"
     aria-label="Close command palette"
+    animate.leave="palette__scrim--out"
     (click)="close()"
   ></button>
   <div
@@ -12,6 +13,7 @@
     aria-label="Command palette"
     cdkTrapFocus
     cdkTrapFocusAutoCapture
+    animate.leave="palette--out"
     (keydown)="onKeydown($event)"
   >
     @if (selected(); as tool) {

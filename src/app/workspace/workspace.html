@@ -69,6 +69,7 @@
           cdkDrag
           [cdkDragDisabled]="renamingId() === doc.id"
           [cdkContextMenuTriggerFor]="tabMenu"
+          animate.leave="workspace__tab--leaving"
         >
           @if (renamingId() === doc.id) {
             <input
@@ -83,7 +84,13 @@
             />
           } @else {
             @if (doc.pinned) {
-              <mat-icon class="workspace__tab-pin" aria-hidden="true">push_pin</mat-icon>
+              <mat-icon
+                class="workspace__tab-pin"
+                aria-hidden="true"
+                animate.enter="workspace__tab-pin--in"
+                animate.leave="workspace__tab-pin--out"
+                >push_pin</mat-icon
+              >
             }
             <button
               type="button"
@@ -216,7 +223,7 @@
       <span class="workspace__actions-spacer"></span>
       <button
         matButton
-        class="workspace__find"
+        class="workspace__find workspace__toggle"
         [class.workspace__toggle--active]="findOpen()"
         [attr.aria-pressed]="findOpen()"
         (click)="toggleFind()"
@@ -229,7 +236,7 @@
       @if (compare()) {
         <button
           matButton
-          class="workspace__toggle--active"
+          class="workspace__toggle workspace__toggle--active"
           aria-pressed="true"
           (click)="closeCompare()"
           matTooltip="Close comparison"
@@ -241,6 +248,7 @@
       } @else {
         <button
           matButton
+          class="workspace__toggle"
           [matMenuTriggerFor]="compareMenu"
           [attr.aria-pressed]="false"
           matTooltip="Compare document"
