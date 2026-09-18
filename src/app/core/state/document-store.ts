@@ -12,6 +12,7 @@ import { ToolParams } from '../tools/param-schema';
 import { ToolExecutor } from '../tools/tool-executor';
 import { ToolRegistry } from '../tools/tool-registry';
 import { ToolResult, failure } from '../tools/tool';
+import { PLAINTEXT } from '../../editor/languages';
 import { AppliedStep, Checkpoint, TextDocument } from './models';
 import {
   StepRunner,
@@ -38,6 +39,7 @@ function newId(): string {
 export interface OpenDocumentOptions {
   readonly name?: string;
   readonly content?: string;
+  readonly language?: string;
 }
 
 export const DocumentStore = signalStore(
@@ -84,6 +86,7 @@ export const DocumentStore = signalStore(
         createdAt: Date.now(),
         order: nextOrder,
         pinned: false,
+        language: options.language ?? PLAINTEXT,
       };
       patchState(store, addEntity(document), { activeId: id, untitledCount });
       return id;
@@ -101,6 +104,7 @@ export const DocumentStore = signalStore(
           ...doc,
           order: doc.order ?? index,
           pinned: doc.pinned ?? false,
+          language: doc.language ?? PLAINTEXT,
         }));
         patchState(store, setAllEntities(normalized), {
           activeId: nextActive,
@@ -121,6 +125,12 @@ export const DocumentStore = signalStore(
       renameDocument(id: string, name: string): void {
         if (store.entityMap()[id]) {
           patchState(store, updateEntity({ id, changes: { name } }));
+        }
+      },
+
+      setLanguage(id: string, language: string): void {
+        if (store.entityMap()[id]) {
+          patchState(store, updateEntity({ id, changes: { language } }));
         }
       },
 

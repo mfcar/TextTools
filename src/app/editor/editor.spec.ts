@@ -54,4 +54,26 @@ describe('Editor', () => {
   it('renders a status bar', () => {
     expect(fixture.nativeElement.querySelector('.editor__status')).toBeTruthy();
   });
+
+  it('opens a find-and-replace panel when requested', async () => {
+    expect(fixture.nativeElement.querySelector('.cm-search')).toBeFalsy();
+    component.searchOpen.set(true);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const panel = fixture.nativeElement.querySelector('.cm-search');
+    expect(panel).toBeTruthy();
+    expect(panel.querySelector('[name="replace"]')).toBeTruthy();
+  });
+
+  it('closes the find-and-replace panel when toggled off', async () => {
+    component.searchOpen.set(true);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(fixture.nativeElement.querySelector('.cm-search')).toBeTruthy();
+
+    component.searchOpen.set(false);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(fixture.nativeElement.querySelector('.cm-search')).toBeFalsy();
+  });
 });

@@ -23,4 +23,5 @@ export interface TextDocument {
   readonly createdAt: number;
   readonly order: number;
   readonly pinned: boolean;
+  readonly language: string;
 }

@@ -29,6 +29,7 @@ function makeDoc(overrides: Partial<TextDocument> = {}): TextDocument {
     createdAt: 1000,
     order: 0,
     pinned: false,
+    language: 'plaintext',
     ...overrides,
   };
 }
@@ -121,5 +122,56 @@ describe('Persistence', () => {
     const db = await openWorkspaceDB();
     expect(await db.getAll('documents')).toHaveLength(1);
     db.close();
+  });
+
+  it('does not rewrite freshly hydrated documents', async () => {
+    const db = await openWorkspaceDB();
+    await db.put('documents', makeDoc({ id: 'abc' }));
+    await db.put('meta', 'abc', 'active');
+    await db.put('meta', '7', 'revision');
+    db.close();
+
+    await persistence.hydrate();
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
+    const check = await openWorkspaceDB();
+    expect(await check.get('meta', 'revision')).toBe('7');
+    check.close();
+  });
+
+  it('reconciles external changes written by another tab', async () => {
+    await persistence.hydrate();
+    const id = store.openDocument({ content: 'local' });
+    await persistence.flush();
+
+    const db = await openWorkspaceDB();
+    const stored = await db.get('documents', id);
+    await db.put('documents', { ...stored!, currentContent: 'remote edit' });
+    await db.put('meta', '99', 'revision');
+    db.close();
+
+    await persistence.reconcile();
+
+    expect(store.entityMap()[id].currentContent).toBe('remote edit');
+  });
+
+  it('does not clobber a newer external write when flushing stale state', async () => {
+    await persistence.hydrate();
+    const id = store.openDocument({ content: 'v1' });
+    await persistence.flush();
+
+    const db = await openWorkspaceDB();
+    const stored = await db.get('documents', id);
+    await db.put('documents', { ...stored!, currentContent: 'external v2' });
+    await db.put('meta', '99', 'revision');
+    db.close();
+
+    store.setContent(id, 'local v3');
+    await persistence.flush();
+
+    const db2 = await openWorkspaceDB();
+    expect((await db2.get('documents', id))!.currentContent).toBe('external v2');
+    db2.close();
+    expect(store.entityMap()[id].currentContent).toBe('external v2');
   });
 });

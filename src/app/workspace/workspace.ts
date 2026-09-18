@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/core';
-import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
 import { CdkMenu, CdkMenuItem, CdkContextMenuTrigger } from '@angular/cdk/menu';
@@ -7,19 +7,36 @@ import { OverlayModule } from '@angular/cdk/overlay';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { DocumentStore } from '../core/state/document-store';
 import { KeyboardShortcuts } from '../core/keyboard/keyboard-shortcuts';
 import { TextDocument } from '../core/state/models';
 import { Editor } from '../editor/editor';
+import {
+  EDITOR_LANGUAGES,
+  MARKDOWN,
+  PLAINTEXT,
+  detectLanguage,
+  languageLabel,
+} from '../editor/languages';
+import { MarkdownPreview } from '../editor/markdown-preview';
+import { DiffView } from '../editor/diff-view';
 import { Autofocus } from '../shared/autofocus';
+
+interface CompareState {
+  readonly original: string;
+  readonly modified: string;
+  readonly label: string;
+}
 
 @Component({
   selector: 'app-workspace',
   imports: [
     MatButtonModule,
     MatIconModule,
+    MatMenuModule,
     MatTooltipModule,
     CdkDrag,
     CdkDropList,
@@ -28,6 +45,8 @@ import { Autofocus } from '../shared/autofocus';
     CdkContextMenuTrigger,
     OverlayModule,
     Editor,
+    MarkdownPreview,
+    DiffView,
     Autofocus,
   ],
   styleUrl: './workspace.scss',
@@ -45,8 +64,20 @@ export class Workspace {
   protected readonly activeId = this.store.activeId;
   protected readonly activeDocument = this.store.activeDocument;
 
+  protected readonly languages = EDITOR_LANGUAGES;
+  protected readonly plaintext = PLAINTEXT;
+  protected readonly markdown = MARKDOWN;
+
   protected readonly renamingId = signal<string | null>(null);
   protected readonly draftName = signal('');
+  protected readonly findOpen = signal(false);
+  protected readonly previewIds = signal<ReadonlySet<string>>(new Set());
+  protected readonly compare = signal<CompareState | null>(null);
+
+  protected readonly otherDocuments = computed<readonly TextDocument[]>(() => {
+    const activeId = this.activeId();
+    return this.documents().filter((doc) => doc.id !== activeId);
+  });
 
   protected readonly tabListOpen = signal(false);
   protected readonly tabFilter = signal('');
@@ -65,6 +96,11 @@ export class Workspace {
     if (this.store.entities().length === 0) {
       this.store.openDocument();
     }
+
+    effect(() => {
+      this.activeId();
+      this.compare.set(null);
+    });
 
     this.shortcuts.register({
       id: 'new-document',
@@ -96,6 +132,88 @@ export class Workspace {
 
   protected newTab(): void {
     this.store.openDocument();
+  }
+
+  protected toggleFind(): void {
+    this.findOpen.update((open) => !open);
+  }
+
+  protected languageName(id: string): string {
+    return languageLabel(id);
+  }
+
+  protected setLanguage(id: string, language: string): void {
+    this.store.setLanguage(id, language);
+  }
+
+  protected detectLanguage(doc: TextDocument): void {
+    this.store.setLanguage(doc.id, detectLanguage(doc.name, doc.currentContent));
+  }
+
+  protected compareWithDocument(other: TextDocument): void {
+    const active = this.store.activeDocument();
+    if (!active) {
+      return;
+    }
+    this.compare.set({
+      original: other.currentContent,
+      modified: active.currentContent,
+      label: `Comparing “${active.name}” with “${other.name}”`,
+    });
+  }
+
+  protected compareWithOriginal(): void {
+    const active = this.store.activeDocument();
+    if (!active) {
+      return;
+    }
+    this.compare.set({
+      original: active.baseContent,
+      modified: active.currentContent,
+      label: `Comparing “${active.name}” with its original text`,
+    });
+  }
+
+  protected async compareWithClipboard(): Promise<void> {
+    const active = this.store.activeDocument();
+    if (!active) {
+      return;
+    }
+    const clipboard = this.document.defaultView?.navigator.clipboard;
+    if (!clipboard?.readText) {
+      this.snackBar.open('Clipboard access is unavailable.', 'Dismiss', { duration: 3000 });
+      return;
+    }
+    try {
+      const text = await clipboard.readText();
+      this.compare.set({
+        original: text,
+        modified: active.currentContent,
+        label: `Comparing “${active.name}” with the clipboard`,
+      });
+    } catch {
+      this.snackBar.open('Could not read the clipboard.', 'Dismiss', { duration: 3000 });
+    }
+  }
+
+  protected closeCompare(): void {
+    this.compare.set(null);
+  }
+
+  protected isPreviewing(id: string): boolean {
+    return this.previewIds().has(id);
+  }
+
+  protected togglePreview(id: string): void {
+    this.previewIds.update((ids) => {
+      const next = new Set(ids);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
   }
 
   protected renameActive(): void {

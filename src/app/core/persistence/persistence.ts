@@ -33,33 +33,62 @@ export class Persistence {
   private lastWrite = 0;
   private hydrated = false;
 
+  private readonly tabId = crypto.randomUUID();
+  private knownRevision = 0;
+  private applyingRemote = false;
+  private readonly channel = this.createChannel();
+
   constructor() {
     const onVisibility = () => {
       if (this.doc.visibilityState === 'hidden') {
         void this.flush();
+      } else {
+        void this.reconcile();
       }
     };
+    const onFocus = () => void this.reconcile();
     const onUnload = () => void this.flush();
     const view = this.doc.defaultView;
     this.doc.addEventListener('visibilitychange', onVisibility);
+    view?.addEventListener('focus', onFocus);
     view?.addEventListener('beforeunload', onUnload);
+
+    if (this.channel) {
+      this.channel.onmessage = (event: MessageEvent) => {
+        if (event.data?.source !== this.tabId) {
+          void this.reconcile();
+        }
+      };
+    }
 
     effect(() => {
       this.store.entities();
       this.store.activeId();
-      if (this.hydrated) {
-        this.schedule();
+      if (!this.hydrated) {
+        return;
       }
+      if (this.applyingRemote) {
+        this.applyingRemote = false;
+        return;
+      }
+      this.schedule();
     });
 
     this.destroyRef.onDestroy(() => {
       this.doc.removeEventListener('visibilitychange', onVisibility);
+      view?.removeEventListener('focus', onFocus);
       view?.removeEventListener('beforeunload', onUnload);
+      this.channel?.close();
       if (this.timer) {
         clearTimeout(this.timer);
       }
       void this.dbPromise?.then((db) => db.close());
     });
+  }
+
+  private createChannel(): BroadcastChannel | null {
+    const Channel = this.doc.defaultView?.BroadcastChannel;
+    return Channel ? new Channel('texttools') : null;
   }
 
   private db(): Promise<IDBPDatabase<WorkspaceDB>> {
@@ -71,13 +100,40 @@ export class Persistence {
       const db = await this.db();
       const documents = await db.getAll('documents');
       const activeId = (await db.get('meta', 'active')) ?? null;
+      this.knownRevision = Number(await db.get('meta', 'revision')) || 0;
       if (documents.length) {
+        this.applyingRemote = true;
         this.store.hydrate(documents, activeId);
       }
     } catch {
       // A blocked or unavailable IndexedDB must not stop the app from starting.
     } finally {
       this.hydrated = true;
+    }
+  }
+
+  /** Reloads the workspace from IndexedDB so this tab reflects writes from others. */
+  async reconcile(): Promise<void> {
+    if (!this.hydrated) {
+      return;
+    }
+    try {
+      const db = await this.db();
+      const revision = Number(await db.get('meta', 'revision')) || 0;
+      if (revision === this.knownRevision) {
+        return;
+      }
+      const documents = await db.getAll('documents');
+      if (!documents.length) {
+        this.knownRevision = revision;
+        return;
+      }
+      const activeId = (await db.get('meta', 'active')) ?? null;
+      this.knownRevision = revision;
+      this.applyingRemote = true;
+      this.store.hydrate(documents, activeId);
+    } catch {
+      // A failed reconcile is non-fatal; the tab keeps its current state.
     }
   }
 
@@ -105,6 +161,14 @@ export class Persistence {
       const currentIds = new Set(documents.map((doc) => doc.id));
 
       const tx = db.transaction(['documents', 'meta'], 'readwrite');
+      const metaStore = tx.objectStore('meta');
+      const remoteRevision = Number(await metaStore.get('revision')) || 0;
+      if (remoteRevision > this.knownRevision) {
+        await tx.done;
+        await this.reconcile();
+        return;
+      }
+
       const docStore = tx.objectStore('documents');
       for (const key of await docStore.getAllKeys()) {
         if (!currentIds.has(key)) {
@@ -114,9 +178,13 @@ export class Persistence {
       for (const document of documents) {
         await docStore.put(document);
       }
-      await tx.objectStore('meta').put(activeId, 'active');
+      const nextRevision = remoteRevision + 1;
+      await metaStore.put(activeId, 'active');
+      await metaStore.put(String(nextRevision), 'revision');
       await tx.done;
+      this.knownRevision = nextRevision;
       this.lastWrite = Date.now();
+      this.channel?.postMessage({ source: this.tabId, revision: nextRevision });
     } catch {
       // Best-effort persistence; a failed write must never crash the app.
     }

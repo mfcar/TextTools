@@ -311,6 +311,7 @@ describe('DocumentStore — ordering and pinning', () => {
     const doc = store.entityMap()['legacy'];
     expect(doc.order).toBe(0);
     expect(doc.pinned).toBe(false);
+    expect(doc.language).toBe('plaintext');
   });
 });
 

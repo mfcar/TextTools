@@ -262,6 +262,64 @@ describe('Workspace', () => {
     );
   });
 
+  it('compares the active document with another open document', () => {
+    const active = store.activeId()!;
+    store.setContent(active, 'current');
+    fixture.componentInstance['newTab']();
+    const other = store.activeId()!;
+    store.setContent(other, 'other body');
+    store.setActive(active);
+    fixture.detectChanges();
+
+    const otherDoc = store.entityMap()[other];
+    fixture.componentInstance['compareWithDocument'](otherDoc);
+
+    const compare = fixture.componentInstance['compare']();
+    expect(compare?.original).toBe('other body');
+    expect(compare?.modified).toBe('current');
+  });
+
+  it('compares the active document with its original text', () => {
+    const id = store.activeId()!;
+    store.setContent(id, 'edited');
+
+    fixture.componentInstance['compareWithOriginal']();
+
+    const compare = fixture.componentInstance['compare']();
+    expect(compare?.original).toBe('edited');
+    expect(compare?.modified).toBe('edited');
+  });
+
+  it('clears the comparison when the active document changes', () => {
+    const active = store.activeId()!;
+    fixture.componentInstance['newTab']();
+    store.setActive(active);
+    fixture.detectChanges();
+    fixture.componentInstance['compareWithOriginal']();
+    expect(fixture.componentInstance['compare']()).not.toBeNull();
+
+    const other = store.entities().find((d) => d.id !== active)!.id;
+    store.setActive(other);
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance['compare']()).toBeNull();
+  });
+
+  it('compares the active document with the clipboard contents', async () => {
+    const id = store.activeId()!;
+    store.setContent(id, 'mine');
+    Object.defineProperty(navigator, 'clipboard', {
+      value: { readText: vi.fn().mockResolvedValue('pasted') },
+      configurable: true,
+    });
+
+    await fixture.componentInstance['compareWithClipboard']();
+
+    const compare = fixture.componentInstance['compare']();
+    expect(compare?.original).toBe('pasted');
+    expect(compare?.modified).toBe('mine');
+  });
+
   it('downloads the active content as a text file', () => {
     const id = store.activeId()!;
     store.renameDocument(id, 'export');

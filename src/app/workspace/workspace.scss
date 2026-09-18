@@ -204,15 +204,39 @@
   flex: 1 1 auto;
   min-block-size: 0;
   display: flex;
+  flex-direction: column;
 }
 
-.workspace__editor app-editor {
+.workspace__editor app-editor,
+.workspace__editor app-markdown-preview,
+.workspace__editor app-diff-view {
   flex: 1 1 auto;
+  min-block-size: 0;
   min-inline-size: 0;
 }
 
 .workspace__editor-loading {
   flex: 1 1 auto;
+}
+
+.workspace__toggle--active {
+  background: var(--mat-sys-secondary-container);
+  color: var(--mat-sys-on-secondary-container);
+}
+
+.workspace__compare-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.35rem 0.75rem;
+  border-block-end: 1px solid var(--mat-sys-outline-variant);
+}
+
+.workspace__compare-label {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  font: var(--mat-sys-label-large);
+  color: var(--mat-sys-on-surface-variant);
 }
 
 .workspace__empty {

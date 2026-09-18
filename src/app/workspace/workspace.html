@@ -182,7 +182,86 @@
         <mat-icon>edit</mat-icon>
         Rename
       </button>
+      <button
+        matButton
+        [matMenuTriggerFor]="langMenu"
+        matTooltip="Editor language"
+        aria-label="Editor language"
+      >
+        <mat-icon>code</mat-icon>
+        {{ languageName(doc.language) }}
+      </button>
+      <mat-menu #langMenu="matMenu">
+        <button mat-menu-item (click)="setLanguage(doc.id, plaintext)">Plain text</button>
+        @for (lang of languages; track lang.id) {
+          <button mat-menu-item (click)="setLanguage(doc.id, lang.id)">{{ lang.label }}</button>
+        }
+        <button mat-menu-item (click)="detectLanguage(doc)">
+          <mat-icon>auto_fix_high</mat-icon>
+          Detect from content
+        </button>
+      </mat-menu>
+      @if (doc.language === markdown) {
+        <button
+          matButton
+          (click)="togglePreview(doc.id)"
+          [attr.aria-pressed]="isPreviewing(doc.id)"
+          matTooltip="Toggle Markdown preview"
+          aria-label="Toggle Markdown preview"
+        >
+          <mat-icon>{{ isPreviewing(doc.id) ? 'edit_note' : 'visibility' }}</mat-icon>
+          {{ isPreviewing(doc.id) ? 'Edit' : 'Preview' }}
+        </button>
+      }
       <span class="workspace__actions-spacer"></span>
+      <button
+        matButton
+        class="workspace__find"
+        [class.workspace__toggle--active]="findOpen()"
+        [attr.aria-pressed]="findOpen()"
+        (click)="toggleFind()"
+        matTooltip="Find and replace"
+        aria-label="Find and replace"
+      >
+        <mat-icon>search</mat-icon>
+        Find
+      </button>
+      @if (compare()) {
+        <button
+          matButton
+          class="workspace__toggle--active"
+          aria-pressed="true"
+          (click)="closeCompare()"
+          matTooltip="Close comparison"
+          aria-label="Close comparison"
+        >
+          <mat-icon>difference</mat-icon>
+          Compare
+        </button>
+      } @else {
+        <button
+          matButton
+          [matMenuTriggerFor]="compareMenu"
+          [attr.aria-pressed]="false"
+          matTooltip="Compare document"
+          aria-label="Compare document"
+        >
+          <mat-icon>difference</mat-icon>
+          Compare
+        </button>
+      }
+      <mat-menu #compareMenu="matMenu">
+        <button mat-menu-item (click)="compareWithOriginal()">With original text</button>
+        <button mat-menu-item (click)="compareWithClipboard()">With clipboard</button>
+        @if (otherDocuments().length > 0) {
+          <button mat-menu-item [matMenuTriggerFor]="compareDocsMenu">With another document</button>
+        }
+      </mat-menu>
+      <mat-menu #compareDocsMenu="matMenu">
+        @for (other of otherDocuments(); track other.id) {
+          <button mat-menu-item (click)="compareWithDocument(other)">{{ other.name }}</button>
+        }
+      </mat-menu>
       <button matButton (click)="copy()" matTooltip="Copy text" aria-label="Copy text">
         <mat-icon>content_copy</mat-icon>
         Copy
@@ -200,21 +279,47 @@
   }
 
   <div class="workspace__editor">
-    @for (doc of activeDocuments(); track doc.id) {
-      @defer (on immediate) {
-        <app-editor
-          [value]="doc.currentContent"
-          (valueChange)="onEdit(doc.id, $event)"
-          [label]="doc.name + ' content'"
+    @if (compare(); as cmp) {
+      <div class="workspace__compare-bar">
+        <span class="workspace__compare-label">{{ cmp.label }}</span>
+      </div>
+      @defer {
+        <app-diff-view
+          class="workspace__compare-view"
+          [original]="cmp.original"
+          [modified]="cmp.modified"
+          [ariaLabel]="cmp.label"
         />
       } @placeholder {
         <div class="workspace__editor-loading" aria-hidden="true"></div>
       }
-    } @empty {
-      <div class="workspace__empty">
-        <p class="workspace__empty-text">No document open.</p>
-        <button matButton="filled" (click)="newTab()">New document</button>
-      </div>
+    } @else {
+      @for (doc of activeDocuments(); track doc.id) {
+        @if (doc.language === markdown && isPreviewing(doc.id)) {
+          @defer {
+            <app-markdown-preview [content]="doc.currentContent" />
+          } @placeholder {
+            <div class="workspace__editor-loading" aria-hidden="true"></div>
+          }
+        } @else {
+          @defer (on immediate) {
+            <app-editor
+              [value]="doc.currentContent"
+              (valueChange)="onEdit(doc.id, $event)"
+              [label]="doc.name + ' content'"
+              [(searchOpen)]="findOpen"
+              [language]="doc.language"
+            />
+          } @placeholder {
+            <div class="workspace__editor-loading" aria-hidden="true"></div>
+          }
+        }
+      } @empty {
+        <div class="workspace__empty">
+          <p class="workspace__empty-text">No document open.</p>
+          <button matButton="filled" (click)="newTab()">New document</button>
+        </div>
+      }
     }
   </div>
 </div>
