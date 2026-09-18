@@ -22,30 +22,37 @@
       </button>
       <button
         matIconButton
-        (click)="toggleSort()"
-        [disabled]="!document() || steps().length === 0"
-        [matTooltip]="sortDescending() ? 'Sort oldest first' : 'Sort newest first'"
-        [attr.aria-label]="sortDescending() ? 'Sort oldest first' : 'Sort newest first'"
-        [attr.aria-pressed]="sortDescending()"
+        [matMenuTriggerFor]="historyMenu"
+        matTooltip="More actions"
+        aria-label="More history actions"
       >
-        <mat-icon>{{ sortDescending() ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+        <mat-icon>more_vert</mat-icon>
       </button>
-      <button
-        matIconButton
-        (click)="clear()"
-        [disabled]="!document() || steps().length === 0"
-        matTooltip="Clear history"
-        aria-label="Clear history"
-      >
-        <mat-icon>delete_sweep</mat-icon>
-      </button>
+      <mat-menu #historyMenu="matMenu">
+        <button
+          mat-menu-item
+          (click)="toggleSort()"
+          [disabled]="!document() || steps().length === 0"
+        >
+          <mat-icon>{{ sortDescending() ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+          <span>{{ sortDescending() ? 'Sort oldest first' : 'Sort newest first' }}</span>
+        </button>
+        <button mat-menu-item (click)="saveAsFlow()" [disabled]="!document() || cursor() === 0">
+          <mat-icon>account_tree</mat-icon>
+          <span>Save as flow</span>
+        </button>
+        <button mat-menu-item (click)="clear()" [disabled]="!document() || steps().length === 0">
+          <mat-icon>delete_sweep</mat-icon>
+          <span>Clear history</span>
+        </button>
+      </mat-menu>
     </div>
   </header>
 
   @if (document()) {
     <ng-template #baseline>
       <ol class="history__list" aria-label="Original text">
-        <li class="history__row">
+        <li class="history__row" [cdkContextMenuTriggerFor]="baselineMenu">
           <button
             type="button"
             class="history__step"
@@ -58,13 +65,23 @@
           </button>
           <button
             matIconButton
-            class="history__branch"
-            (click)="branch(0)"
-            matTooltip="Branch into a separate document"
-            aria-label="Branch from the original text"
+            class="history__more"
+            [cdkMenuTriggerFor]="baselineMenu"
+            matTooltip="Actions"
+            aria-label="Actions for the original text"
           >
-            <mat-icon>call_split</mat-icon>
+            <mat-icon>more_vert</mat-icon>
           </button>
+          <ng-template #baselineMenu>
+            <div class="history__menu" cdkMenu>
+              <button class="history__menu-item" cdkMenuItem (cdkMenuItemTriggered)="goTo(0)">
+                Go to original text
+              </button>
+              <button class="history__menu-item" cdkMenuItem (cdkMenuItemTriggered)="branch(0)">
+                Branch into a separate document
+              </button>
+            </div>
+          </ng-template>
         </li>
       </ol>
     </ng-template>
@@ -76,29 +93,107 @@
     @if (steps().length) {
       <cdk-virtual-scroll-viewport class="history__scroll" itemSize="64">
         <ol class="history__list">
-          <li class="history__row" *cdkVirtualFor="let row of rows()">
-            <button
-              type="button"
-              class="history__step"
-              [class.history__step--active]="cursor() === row.index"
-              [attr.aria-current]="cursor() === row.index ? 'step' : null"
-              (click)="goTo(row.index)"
-            >
-              <span class="history__step-index">{{ row.index }}</span>
-              <span class="history__step-text">
-                <span class="history__step-name">{{ row.toolName }}</span>
-                <span class="history__step-time">{{ row.at | date: 'shortTime' }}</span>
-              </span>
-            </button>
+          <li
+            class="history__row"
+            *cdkVirtualFor="let row of rows(); trackBy: trackRow"
+            [cdkContextMenuTriggerFor]="rowMenu"
+          >
+            @switch (row.kind) {
+              @case ('group') {
+                <button
+                  matIconButton
+                  class="history__expand"
+                  (click)="toggleGroup(row.runId)"
+                  [attr.aria-expanded]="row.expanded"
+                  [attr.aria-label]="(row.expanded ? 'Collapse ' : 'Expand ') + row.flowName"
+                >
+                  <mat-icon>{{ row.expanded ? 'expand_more' : 'chevron_right' }}</mat-icon>
+                </button>
+                <button
+                  type="button"
+                  class="history__step history__group"
+                  [class.history__step--active]="inGroup(row.startIndex, row.endIndex)"
+                  [attr.aria-current]="inGroup(row.startIndex, row.endIndex) ? 'step' : null"
+                  (click)="goTo(row.endIndex)"
+                >
+                  <span class="history__step-text">
+                    <span class="history__step-name">{{ row.flowName }}</span>
+                    <span class="history__step-time">
+                      Flow · {{ row.count }} step{{ row.count === 1 ? '' : 's' }}
+                    </span>
+                  </span>
+                </button>
+              }
+              @default {
+                <button
+                  type="button"
+                  class="history__step"
+                  [class.history__step--child]="row.child"
+                  [class.history__step--active]="cursor() === row.index"
+                  [attr.aria-current]="cursor() === row.index ? 'step' : null"
+                  (click)="goTo(row.index)"
+                >
+                  <span class="history__step-index">{{ row.index }}</span>
+                  <span class="history__step-text">
+                    <span class="history__step-name">{{ row.toolName }}</span>
+                    <span class="history__step-time">{{ row.at | date: 'shortTime' }}</span>
+                  </span>
+                </button>
+              }
+            }
             <button
               matIconButton
-              class="history__branch"
-              (click)="branch(row.index)"
-              [matTooltip]="'Branch into a separate document after ' + row.toolName"
-              [attr.aria-label]="'Branch from ' + row.toolName"
+              class="history__more"
+              [cdkMenuTriggerFor]="rowMenu"
+              matTooltip="Actions"
+              [attr.aria-label]="
+                'Actions for ' + (row.kind === 'group' ? row.flowName : row.toolName)
+              "
             >
-              <mat-icon>call_split</mat-icon>
+              <mat-icon>more_vert</mat-icon>
             </button>
+            <ng-template #rowMenu>
+              <div class="history__menu" cdkMenu>
+                @if (row.kind === 'group') {
+                  <button
+                    class="history__menu-item"
+                    cdkMenuItem
+                    (cdkMenuItemTriggered)="toggleGroup(row.runId)"
+                  >
+                    {{ row.expanded ? 'Collapse steps' : 'Expand steps' }}
+                  </button>
+                  <button
+                    class="history__menu-item"
+                    cdkMenuItem
+                    (cdkMenuItemTriggered)="goTo(row.endIndex)"
+                  >
+                    Go to end of flow
+                  </button>
+                  <button
+                    class="history__menu-item"
+                    cdkMenuItem
+                    (cdkMenuItemTriggered)="branch(row.endIndex)"
+                  >
+                    Branch into a separate document
+                  </button>
+                } @else {
+                  <button
+                    class="history__menu-item"
+                    cdkMenuItem
+                    (cdkMenuItemTriggered)="goTo(row.index)"
+                  >
+                    Go to this step
+                  </button>
+                  <button
+                    class="history__menu-item"
+                    cdkMenuItem
+                    (cdkMenuItemTriggered)="branch(row.index)"
+                  >
+                    Branch into a separate document
+                  </button>
+                }
+              </div>
+            </ng-template>
           </li>
         </ol>
       </cdk-virtual-scroll-viewport>

@@ -13,7 +13,7 @@ import { ToolExecutor } from '../tools/tool-executor';
 import { ToolRegistry } from '../tools/tool-registry';
 import { ToolResult, failure } from '../tools/tool';
 import { PLAINTEXT } from '../../editor/languages';
-import { AppliedStep, Checkpoint, TextDocument } from './models';
+import { AppliedStep, Checkpoint, Flow, TextDocument } from './models';
 import {
   StepRunner,
   isCheckpointIndex,
@@ -40,6 +40,12 @@ export interface OpenDocumentOptions {
   readonly name?: string;
   readonly content?: string;
   readonly language?: string;
+}
+
+export interface FlowRunResult {
+  readonly ok: boolean;
+  readonly appliedCount: number;
+  readonly error?: string;
 }
 
 export const DocumentStore = signalStore(
@@ -69,6 +75,39 @@ export const DocumentStore = signalStore(
     const executor = inject(ToolExecutor);
     const config = inject(HISTORY_CONFIG);
     const run: StepRunner = (step, input) => executor.execute(step.toolId, input, step.params);
+
+    const appendStep = async (
+      doc: TextDocument,
+      step: AppliedStep,
+      output: string,
+    ): Promise<Partial<TextDocument>> => {
+      const history = [...doc.history.slice(0, doc.cursor), step];
+      let cursor = history.length;
+      let baseContent = doc.baseContent;
+
+      let checkpoints: readonly Checkpoint[] = doc.checkpoints.filter(
+        (cp) => cp.index <= doc.cursor,
+      );
+      if (isCheckpointIndex(cursor, config.checkpointInterval)) {
+        checkpoints = pruneCheckpoints(
+          [...checkpoints, { index: cursor, content: output }],
+          config.checkpointBudgetBytes,
+        );
+      }
+
+      let finalHistory: readonly AppliedStep[] = history;
+      if (finalHistory.length > config.historyCap) {
+        const drop = finalHistory.length - config.historyCap;
+        baseContent = await replayTo(run, baseContent, checkpoints, finalHistory, drop);
+        finalHistory = finalHistory.slice(drop);
+        cursor -= drop;
+        checkpoints = checkpoints
+          .filter((cp) => cp.index > drop)
+          .map((cp) => ({ index: cp.index - drop, content: cp.content }));
+      }
+
+      return { baseContent, currentContent: output, history: finalHistory, cursor, checkpoints };
+    };
 
     const open = (options: OpenDocumentOptions = {}): string => {
       const id = newId();
@@ -184,45 +223,58 @@ export const DocumentStore = signalStore(
         }
 
         const step: AppliedStep = { toolId, toolName: tool.name, params, at: Date.now() };
-        const history = [...doc.history.slice(0, doc.cursor), step];
-        let cursor = history.length;
-        let baseContent = doc.baseContent;
-
-        let checkpoints: readonly Checkpoint[] = doc.checkpoints.filter(
-          (cp) => cp.index <= doc.cursor,
-        );
-        if (isCheckpointIndex(cursor, config.checkpointInterval)) {
-          checkpoints = pruneCheckpoints(
-            [...checkpoints, { index: cursor, content: result.output }],
-            config.checkpointBudgetBytes,
-          );
-        }
-
-        let finalHistory: readonly AppliedStep[] = history;
-        if (finalHistory.length > config.historyCap) {
-          const drop = finalHistory.length - config.historyCap;
-          baseContent = await replayTo(run, baseContent, checkpoints, finalHistory, drop);
-          finalHistory = finalHistory.slice(drop);
-          cursor -= drop;
-          checkpoints = checkpoints
-            .filter((cp) => cp.index > drop)
-            .map((cp) => ({ index: cp.index - drop, content: cp.content }));
-        }
-
-        patchState(
-          store,
-          updateEntity({
-            id,
-            changes: {
-              baseContent,
-              currentContent: result.output,
-              history: finalHistory,
-              cursor,
-              checkpoints,
-            },
-          }),
-        );
+        const changes = await appendStep(doc, step, result.output);
+        patchState(store, updateEntity({ id, changes }));
         return result;
+      },
+
+      async applyFlow(
+        id: string,
+        flow: Flow,
+        overrides: readonly ToolParams[] = [],
+      ): Promise<FlowRunResult> {
+        if (!store.entityMap()[id]) {
+          return { ok: false, appliedCount: 0, error: `Unknown document "${id}".` };
+        }
+        if (flow.steps.length === 0) {
+          return { ok: false, appliedCount: 0, error: 'This flow has no steps to run.' };
+        }
+        const runId = newId();
+        let applied = 0;
+        for (const [index, flowStep] of flow.steps.entries()) {
+          const doc = store.entityMap()[id];
+          if (!doc) {
+            return { ok: false, appliedCount: applied, error: `Unknown document "${id}".` };
+          }
+          const tool = registry.get(flowStep.toolId);
+          if (!tool) {
+            return {
+              ok: false,
+              appliedCount: applied,
+              error: `Step ${applied + 1}: unknown tool "${flowStep.toolId}".`,
+            };
+          }
+          const params = { ...flowStep.params, ...overrides[index] };
+          const result = await executor.execute(flowStep.toolId, doc.currentContent, params);
+          if (!result.ok) {
+            return {
+              ok: false,
+              appliedCount: applied,
+              error: `Step ${applied + 1} (${flowStep.toolName}): ${result.error}`,
+            };
+          }
+          const step: AppliedStep = {
+            toolId: flowStep.toolId,
+            toolName: flowStep.toolName,
+            params,
+            at: Date.now(),
+            group: { runId, flowId: flow.id, flowName: flow.name },
+          };
+          const changes = await appendStep(doc, step, result.output);
+          patchState(store, updateEntity({ id, changes }));
+          applied += 1;
+        }
+        return { ok: true, appliedCount: applied };
       },
 
       async undo(id: string): Promise<void> {

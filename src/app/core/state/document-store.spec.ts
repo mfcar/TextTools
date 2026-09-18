@@ -4,6 +4,7 @@ import { HISTORY_CONFIG, HistoryConfig } from '../perf/history-policy';
 import { defineTool, failure } from '../tools/tool';
 import { provideTools } from '../tools/tool-registry';
 import { DocumentStore } from './document-store';
+import { Flow } from './models';
 
 const append = defineTool({
   id: 'append',
@@ -335,6 +336,110 @@ describe('DocumentStore — branch from history', () => {
   it('returns null for an unknown document', async () => {
     const store = setup();
     expect(await store.branchFromHistory('missing', 0, 'x')).toBeNull();
+  });
+});
+
+describe('DocumentStore — applying flows', () => {
+  let store: InstanceType<typeof DocumentStore>;
+  let id: string;
+
+  beforeEach(() => {
+    store = setup();
+    id = store.openDocument({ content: 'hi' });
+  });
+
+  function flow(steps: Flow['steps']): Flow {
+    return {
+      id: 'flow-1',
+      name: 'My flow',
+      description: '',
+      steps,
+      versions: [{ version: 1, steps, createdAt: 1 }],
+      createdAt: 1,
+      updatedAt: 1,
+    };
+  }
+
+  it('runs every step and tags them with the run group', async () => {
+    const result = await store.applyFlow(
+      id,
+      flow([
+        { toolId: 'upper', toolName: 'Uppercase', params: {} },
+        { toolId: 'append', toolName: 'Append', params: { s: '!' } },
+      ]),
+    );
+
+    expect(result).toEqual({ ok: true, appliedCount: 2 });
+    const doc = store.entityMap()[id];
+    expect(doc.currentContent).toBe('HI!');
+    expect(doc.history).toHaveLength(2);
+    const runIds = doc.history.map((step) => step.group?.runId);
+    expect(runIds[0]).toBeDefined();
+    expect(runIds[0]).toBe(runIds[1]);
+    expect(doc.history[0].group?.flowName).toBe('My flow');
+  });
+
+  it('merges per-step overrides over the baked params', async () => {
+    const result = await store.applyFlow(
+      id,
+      flow([
+        { toolId: 'upper', toolName: 'Uppercase', params: {} },
+        { toolId: 'append', toolName: 'Append', params: { s: '!' } },
+      ]),
+      [{}, { s: '?' }],
+    );
+
+    expect(result).toEqual({ ok: true, appliedCount: 2 });
+    const doc = store.entityMap()[id];
+    expect(doc.currentContent).toBe('HI?');
+    expect(doc.history[1].params['s']).toBe('?');
+  });
+
+  it('fails without applying anything for an empty flow', async () => {
+    const result = await store.applyFlow(id, flow([]));
+    expect(result.ok).toBe(false);
+    expect(result.appliedCount).toBe(0);
+    expect(store.entityMap()[id].history).toHaveLength(0);
+  });
+
+  it('reports an unknown tool and keeps earlier steps', async () => {
+    const result = await store.applyFlow(
+      id,
+      flow([
+        { toolId: 'upper', toolName: 'Uppercase', params: {} },
+        { toolId: 'ghost', toolName: 'Ghost', params: {} },
+      ]),
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.appliedCount).toBe(1);
+    expect(result.error).toContain('Step 2');
+    expect(store.entityMap()[id].currentContent).toBe('HI');
+    expect(store.entityMap()[id].history).toHaveLength(1);
+  });
+
+  it('stops at a failing step and surfaces its error', async () => {
+    const result = await store.applyFlow(
+      id,
+      flow([
+        { toolId: 'upper', toolName: 'Uppercase', params: {} },
+        { toolId: 'boom', toolName: 'Boom', params: {} },
+      ]),
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.appliedCount).toBe(1);
+    expect(result.error).toContain('Boom');
+    expect(store.entityMap()[id].history).toHaveLength(1);
+  });
+
+  it('reports a failure for an unknown document', async () => {
+    const result = await store.applyFlow(
+      'missing',
+      flow([{ toolId: 'upper', toolName: 'Uppercase', params: {} }]),
+    );
+    expect(result.ok).toBe(false);
+    expect(result.appliedCount).toBe(0);
   });
 });
 

@@ -1,0 +1,56 @@
+.flows__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.flows__item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 0.5rem;
+}
+
+.flows__item:focus-visible {
+  outline: 2px solid var(--mat-sys-primary);
+  outline-offset: 2px;
+}
+
+.flows__run {
+  flex-shrink: 0;
+}
+
+.flows__info {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.flows__name {
+  margin: 0;
+  font-weight: 600;
+}
+
+.flows__desc {
+  margin: 0.125rem 0 0;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.flows__meta {
+  margin: 0.25rem 0 0;
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.flows__actions {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.flows__empty {
+  color: var(--mat-sys-on-surface-variant);
+}

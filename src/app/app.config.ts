@@ -9,6 +9,7 @@ import { provideRouter } from '@angular/router';
 import { MAT_ICON_DEFAULT_OPTIONS } from '@angular/material/icon';
 import { provideServiceWorker } from '@angular/service-worker';
 import { Persistence } from './core/persistence/persistence';
+import { PwaUpdate } from './core/pwa/pwa-update';
 import { provideTools } from './core/tools/tool-registry';
 import { ALL_TOOLS } from './tools';
 import { routes } from './app.routes';
@@ -24,5 +25,6 @@ export const appConfig: ApplicationConfig = {
       enabled: !isDevMode(),
       registrationStrategy: 'registerWhenStable:30000',
     }),
+    provideAppInitializer(() => inject(PwaUpdate).init()),
   ],
 };

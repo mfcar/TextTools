@@ -1,6 +1,7 @@
 import { DOCUMENT, DestroyRef, InjectionToken, Service, effect, inject } from '@angular/core';
 import { IDBPDatabase } from 'idb';
 import { DocumentStore } from '../state/document-store';
+import { FlowStore } from '../state/flow-store';
 import { WorkspaceDB, openWorkspaceDB } from './document-db';
 
 export const PERSIST_DEBOUNCE_MS = 750;
@@ -24,6 +25,7 @@ export const PERSISTENCE_CONFIG = new InjectionToken<PersistenceConfig>('PERSIST
 @Service()
 export class Persistence {
   private readonly store = inject(DocumentStore);
+  private readonly flowStore = inject(FlowStore);
   private readonly destroyRef = inject(DestroyRef);
   private readonly doc = inject(DOCUMENT);
   private readonly config = inject(PERSISTENCE_CONFIG);
@@ -64,6 +66,7 @@ export class Persistence {
     effect(() => {
       this.store.entities();
       this.store.activeId();
+      this.flowStore.entities();
       if (!this.hydrated) {
         return;
       }
@@ -99,11 +102,15 @@ export class Persistence {
     try {
       const db = await this.db();
       const documents = await db.getAll('documents');
+      const flows = await db.getAll('flows');
       const activeId = (await db.get('meta', 'active')) ?? null;
       this.knownRevision = Number(await db.get('meta', 'revision')) || 0;
-      if (documents.length) {
+      if (documents.length || flows.length) {
         this.applyingRemote = true;
-        this.store.hydrate(documents, activeId);
+        if (documents.length) {
+          this.store.hydrate(documents, activeId);
+        }
+        this.flowStore.hydrate(flows);
       }
     } catch {
       // A blocked or unavailable IndexedDB must not stop the app from starting.
@@ -124,14 +131,18 @@ export class Persistence {
         return;
       }
       const documents = await db.getAll('documents');
-      if (!documents.length) {
+      const flows = await db.getAll('flows');
+      if (!documents.length && !flows.length) {
         this.knownRevision = revision;
         return;
       }
       const activeId = (await db.get('meta', 'active')) ?? null;
       this.knownRevision = revision;
       this.applyingRemote = true;
-      this.store.hydrate(documents, activeId);
+      if (documents.length) {
+        this.store.hydrate(documents, activeId);
+      }
+      this.flowStore.hydrate(flows);
     } catch {
       // A failed reconcile is non-fatal; the tab keeps its current state.
     }
@@ -157,10 +168,12 @@ export class Persistence {
     try {
       const db = await this.db();
       const documents = this.store.entities();
+      const flows = this.flowStore.entities();
       const activeId = this.store.activeId();
       const currentIds = new Set(documents.map((doc) => doc.id));
+      const currentFlowIds = new Set(flows.map((flow) => flow.id));
 
-      const tx = db.transaction(['documents', 'meta'], 'readwrite');
+      const tx = db.transaction(['documents', 'flows', 'meta'], 'readwrite');
       const metaStore = tx.objectStore('meta');
       const remoteRevision = Number(await metaStore.get('revision')) || 0;
       if (remoteRevision > this.knownRevision) {
@@ -178,6 +191,17 @@ export class Persistence {
       for (const document of documents) {
         await docStore.put(document);
       }
+
+      const flowStore = tx.objectStore('flows');
+      for (const key of await flowStore.getAllKeys()) {
+        if (!currentFlowIds.has(key)) {
+          await flowStore.delete(key);
+        }
+      }
+      for (const flow of flows) {
+        await flowStore.put(flow);
+      }
+
       const nextRevision = remoteRevision + 1;
       await metaStore.put(activeId, 'active');
       await metaStore.put(String(nextRevision), 'revision');

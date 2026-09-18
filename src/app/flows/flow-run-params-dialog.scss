@@ -1,0 +1,29 @@
+.flow-run__intro {
+  margin: 0 0 0.75rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.flow-run__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.flow-run__item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.flow-run__item mat-form-field {
+  inline-size: 100%;
+}
+
+.flow-run__step {
+  margin: 0;
+  font: var(--mat-sys-label-small);
+  color: var(--mat-sys-on-surface-variant);
+}

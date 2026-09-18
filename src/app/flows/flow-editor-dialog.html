@@ -1,0 +1,220 @@
+@if (available()) {
+  <h2 mat-dialog-title>{{ isNew ? 'New flow' : 'Edit flow' }}</h2>
+  <mat-dialog-content class="flow-editor">
+    <div class="flow-editor__meta">
+      <mat-form-field>
+        <mat-label>Name</mat-label>
+        <input
+          matInput
+          [value]="name()"
+          (input)="name.set($any($event.target).value)"
+          cdkFocusInitial
+        />
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Description</mat-label>
+        <input
+          matInput
+          [value]="description()"
+          (input)="description.set($any($event.target).value)"
+        />
+      </mat-form-field>
+    </div>
+
+    <h3 class="flow-editor__subtitle">Steps</h3>
+    @if (steps().length) {
+      <ol class="flow-editor__steps" cdkDropList (cdkDropListDropped)="drop($event)">
+        @for (step of steps(); track step.id; let i = $index) {
+          <li class="flow-editor__step" cdkDrag>
+            <div class="flow-editor__step-head">
+              <button
+                matIconButton
+                cdkDragHandle
+                class="flow-editor__handle"
+                matTooltip="Drag to reorder"
+                [attr.aria-label]="'Reorder ' + step.toolName"
+              >
+                <mat-icon>drag_indicator</mat-icon>
+              </button>
+              <span class="flow-editor__step-index">{{ i + 1 }}</span>
+              <span class="flow-editor__step-name">{{ step.toolName }}</span>
+              @if (stepErrors(step).length) {
+                <mat-icon
+                  class="flow-editor__step-warn"
+                  matTooltip="This step has invalid parameters"
+                >
+                  warning
+                </mat-icon>
+              }
+              @if (paramsOf(step).length) {
+                <button
+                  matIconButton
+                  (click)="toggleExpand(step.id)"
+                  [attr.aria-expanded]="expandedId() === step.id"
+                  [attr.aria-label]="'Edit parameters for ' + step.toolName"
+                >
+                  <mat-icon>{{ expandedId() === step.id ? 'expand_less' : 'tune' }}</mat-icon>
+                </button>
+              }
+              <button
+                matIconButton
+                (click)="removeStep(step.id)"
+                matTooltip="Remove step"
+                [attr.aria-label]="'Remove ' + step.toolName"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+
+            @if (expandedId() === step.id) {
+              <div class="flow-editor__params">
+                @for (param of paramsOf(step); track param.key) {
+                  <div class="flow-editor__param">
+                    @switch (param.type) {
+                      @case ('boolean') {
+                        <mat-checkbox
+                          [checked]="paramBool(step, param.key)"
+                          (change)="setBool(step.id, param.key, $event.checked)"
+                        >
+                          {{ param.label }}
+                        </mat-checkbox>
+                      }
+                      @case ('select') {
+                        <mat-form-field>
+                          <mat-label>{{ param.label }}</mat-label>
+                          <mat-select
+                            [value]="paramString(step, param.key)"
+                            (selectionChange)="setSelect(step.id, param.key, $event.value)"
+                          >
+                            @for (option of selectOptions(param); track option.value) {
+                              <mat-option [value]="option.value">{{ option.label }}</mat-option>
+                            }
+                          </mat-select>
+                        </mat-form-field>
+                      }
+                      @case ('number') {
+                        <mat-form-field>
+                          <mat-label>{{ param.label }}</mat-label>
+                          <input
+                            matInput
+                            type="number"
+                            [value]="paramString(step, param.key)"
+                            (input)="setParam(step.id, param.key, $event)"
+                            [min]="numberMin(param)"
+                            [max]="numberMax(param)"
+                            [step]="numberStep(param)"
+                          />
+                        </mat-form-field>
+                      }
+                      @default {
+                        <mat-form-field>
+                          <mat-label>{{ param.label }}</mat-label>
+                          <input
+                            matInput
+                            type="text"
+                            [value]="paramString(step, param.key)"
+                            (input)="setParam(step.id, param.key, $event)"
+                          />
+                        </mat-form-field>
+                      }
+                    }
+                    <mat-checkbox
+                      class="flow-editor__ask"
+                      [checked]="isAsk(step, param.key)"
+                      (change)="toggleAsk(step.id, param.key, $event.checked)"
+                    >
+                      Ask for “{{ param.label }}” when the flow runs
+                    </mat-checkbox>
+                  </div>
+                }
+                @if (stepErrors(step).length) {
+                  <ul class="flow-editor__errors" aria-live="polite">
+                    @for (error of stepErrors(step); track error) {
+                      <li>{{ error }}</li>
+                    }
+                  </ul>
+                }
+              </div>
+            }
+          </li>
+        }
+      </ol>
+    } @else {
+      <p class="flow-editor__empty">This flow has no steps yet. Add a tool to get started.</p>
+    }
+
+    <div class="flow-editor__add">
+      @if (picking()) {
+        <div class="flow-editor__picker">
+          <mat-form-field class="flow-editor__picker-search">
+            <mat-label>Search tools</mat-label>
+            <input matInput appAutofocus [value]="pickQuery()" (input)="setPickQuery($event)" />
+          </mat-form-field>
+          <ul class="flow-editor__picker-list">
+            @for (tool of pickResults(); track tool.id) {
+              <li>
+                <button type="button" class="flow-editor__picker-item" (click)="addStep(tool)">
+                  <span class="flow-editor__picker-name">{{ tool.name }}</span>
+                  <span class="flow-editor__picker-cat">{{ tool.category }}</span>
+                </button>
+              </li>
+            } @empty {
+              <li class="flow-editor__picker-empty">No tools match your search.</li>
+            }
+          </ul>
+        </div>
+      }
+      <button matButton (click)="togglePicker()" [attr.aria-expanded]="picking()">
+        <mat-icon>{{ picking() ? 'close' : 'add' }}</mat-icon>
+        {{ picking() ? 'Cancel' : 'Add step' }}
+      </button>
+    </div>
+
+    @if (versions().length > 1) {
+      <h3 class="flow-editor__subtitle">Compare versions</h3>
+      <div class="flow-editor__version-pickers">
+        <mat-form-field>
+          <mat-label>From</mat-label>
+          <mat-select [value]="diffFrom()" (selectionChange)="diffFrom.set($event.value)">
+            @for (version of versions(); track version.version) {
+              <mat-option [value]="version.version">
+                v{{ version.version }} · {{ version.createdAt | date: 'short' }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>To</mat-label>
+          <mat-select [value]="diffTo()" (selectionChange)="diffTo.set($event.value)">
+            @for (version of versions(); track version.version) {
+              <mat-option [value]="version.version">
+                v{{ version.version }} · {{ version.createdAt | date: 'short' }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="flow-editor__diff">
+        <app-diff-view
+          [original]="diffOriginal()"
+          [modified]="diffModified()"
+          ariaLabel="Differences between the selected flow versions"
+        />
+      </div>
+    }
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button matButton mat-dialog-close>Close</button>
+    <button matButton="filled" (click)="save()" [disabled]="!canSave()">
+      {{ isNew ? 'Create flow' : 'Save version' }}
+    </button>
+  </mat-dialog-actions>
+} @else {
+  <h2 mat-dialog-title>Flow not found</h2>
+  <mat-dialog-content>
+    <p>This flow is no longer available.</p>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button matButton mat-dialog-close cdkFocusInitial>Close</button>
+  </mat-dialog-actions>
+}

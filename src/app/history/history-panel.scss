@@ -32,22 +32,57 @@
   flex: 1 1 auto;
   block-size: 100%;
   min-block-size: 8rem;
+  overflow-x: hidden;
 }
 
 .history__row {
   display: flex;
   align-items: center;
+  gap: 0.25rem;
   block-size: 64px;
 }
 
-.history__branch {
+.history__expand {
+  flex: 0 0 auto;
+}
+
+.history__more {
   flex: 0 0 auto;
   opacity: 0;
 }
 
-.history__row:hover .history__branch,
-.history__branch:focus-visible {
+.history__row:hover .history__more,
+.history__more:focus-visible,
+.history__more[aria-expanded='true'],
+.history__row:has(.history__step--active) .history__more {
   opacity: 1;
+}
+
+.history__menu {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 12rem;
+  padding: 0.25rem;
+  border-radius: var(--mat-sys-corner-small);
+  background-color: var(--mat-sys-surface-container);
+  box-shadow: var(--mat-sys-level2);
+}
+
+.history__menu-item {
+  padding: 0.5rem 0.75rem;
+  border: none;
+  border-radius: var(--mat-sys-corner-extra-small);
+  background: transparent;
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+  text-align: start;
+  cursor: pointer;
+}
+
+.history__menu-item:hover,
+.history__menu-item:focus-visible {
+  background-color: var(--mat-sys-surface-container-highest);
+  outline: none;
 }
 
 .history__step {
@@ -73,6 +108,14 @@
 .history__step--active {
   background-color: var(--mat-sys-secondary-container);
   color: var(--mat-sys-on-secondary-container);
+}
+
+.history__step--child {
+  padding-inline-start: 1.75rem;
+}
+
+.history__group .history__step-name {
+  font-weight: 600;
 }
 
 .history__step-index {

@@ -60,6 +60,14 @@ export class Shell {
     });
   }
 
+  protected async openFlows(): Promise<void> {
+    if (this.dialog.getDialogById('flows')) {
+      return;
+    }
+    const { FlowsDialog } = await import('../../flows/flows-dialog');
+    this.dialog.open(FlowsDialog, { id: 'flows', width: '40rem', maxWidth: '95vw' });
+  }
+
   protected async openShortcuts(): Promise<void> {
     if (this.dialog.getDialogById('shortcuts-help')) {
       return;

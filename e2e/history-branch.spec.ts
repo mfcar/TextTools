@@ -19,12 +19,16 @@ test.describe('History sort & branch', () => {
   });
 
   test('toggles the history sort order', async ({ page }) => {
-    await page.getByRole('button', { name: 'Sort newest first' }).click();
-    await expect(page.getByRole('button', { name: 'Sort oldest first' })).toBeVisible();
+    await page.getByRole('button', { name: 'More history actions' }).click();
+    await page.getByRole('menuitem', { name: 'Sort newest first' }).click();
+
+    await page.getByRole('button', { name: 'More history actions' }).click();
+    await expect(page.getByRole('menuitem', { name: 'Sort oldest first' })).toBeVisible();
   });
 
   test('branches a history step into a new named document', async ({ page }) => {
-    await page.getByRole('button', { name: 'Branch from Uppercase' }).click();
+    await page.getByRole('button', { name: 'Actions for Uppercase' }).click();
+    await page.getByRole('menuitem', { name: 'Branch into a separate document' }).click();
 
     const dialog = page.getByRole('dialog', { name: 'Branch into a new document' });
     await expect(dialog).toBeVisible();
@@ -37,5 +41,19 @@ test.describe('History sort & branch', () => {
         .getByRole('button', { name: 'Branch A', exact: true }),
     ).toBeVisible();
     await expect(page.locator('.cm-content')).toHaveText('HELLO');
+  });
+
+  test('opens a history row action menu with a right-click', async ({ page }) => {
+    await page.locator('.history__row', { hasText: 'Uppercase' }).click({ button: 'right' });
+    await page.getByRole('menuitem', { name: 'Branch into a separate document' }).click();
+
+    await expect(page.getByRole('dialog', { name: 'Branch into a new document' })).toBeVisible();
+  });
+
+  test('keeps history rows within the sidebar without horizontal scroll', async ({ page }) => {
+    const overflow = await page
+      .locator('.history__scroll')
+      .evaluate((el) => el.scrollWidth - el.clientWidth);
+    expect(overflow).toBeLessThanOrEqual(1);
   });
 });

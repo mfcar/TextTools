@@ -1,0 +1,66 @@
+<h2 mat-dialog-title>Flows</h2>
+<mat-dialog-content>
+  @if (items().length) {
+    <ul class="flows__list">
+      @for (flow of items(); track flow.id; let i = $index) {
+        <li
+          #flowItem
+          class="flows__item"
+          [attr.tabindex]="i === activeIndex() ? 0 : -1"
+          (focusin)="activeIndex.set(i)"
+          (keydown)="onListKeydown($event)"
+        >
+          <button
+            matIconButton
+            class="flows__run"
+            (click)="run(flow)"
+            [disabled]="!hasActiveDocument() || flow.steps.length === 0"
+            matTooltip="Run on the active document"
+            [attr.aria-label]="'Run ' + flow.name"
+          >
+            <mat-icon>play_arrow</mat-icon>
+          </button>
+          <div class="flows__info">
+            <p class="flows__name">{{ flow.name }}</p>
+            @if (flow.description) {
+              <p class="flows__desc">{{ flow.description }}</p>
+            }
+            <p class="flows__meta">
+              {{ flow.steps.length }} step{{ flow.steps.length === 1 ? '' : 's' }} · updated
+              {{ flow.updatedAt | date: 'short' }}
+            </p>
+          </div>
+          <div class="flows__actions">
+            <button
+              matIconButton
+              (click)="edit(flow)"
+              matTooltip="Edit flow"
+              [attr.aria-label]="'Edit ' + flow.name"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
+              matIconButton
+              (click)="remove(flow)"
+              matTooltip="Delete flow"
+              [attr.aria-label]="'Delete ' + flow.name"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </li>
+      }
+    </ul>
+  } @else {
+    <p class="flows__empty">
+      No flows yet. Create one from scratch, or build history in a document and use “Save as flow”.
+    </p>
+  }
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button matButton mat-dialog-close cdkFocusInitial>Close</button>
+  <button matButton="filled" (click)="create()">
+    <mat-icon>add</mat-icon>
+    New flow
+  </button>
+</mat-dialog-actions>

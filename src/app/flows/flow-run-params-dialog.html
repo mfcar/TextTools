@@ -1,0 +1,63 @@
+<h2 mat-dialog-title>Run “{{ data.flowName }}”</h2>
+<mat-dialog-content class="flow-run">
+  <p class="flow-run__intro">Set the values to use for this run.</p>
+  <ul class="flow-run__list">
+    @for (request of data.requests; track keyOf(request)) {
+      <li class="flow-run__item">
+        <p class="flow-run__step">Step {{ request.stepPosition }} · {{ request.toolName }}</p>
+        @switch (request.param.type) {
+          @case ('boolean') {
+            <mat-checkbox
+              [checked]="valueBool(request)"
+              (change)="setBool(request, $event.checked)"
+            >
+              {{ request.param.label }}
+            </mat-checkbox>
+          }
+          @case ('select') {
+            <mat-form-field>
+              <mat-label>{{ request.param.label }}</mat-label>
+              <mat-select
+                [value]="valueString(request)"
+                (selectionChange)="setSelect(request, $event.value)"
+              >
+                @for (option of selectOptions(request.param); track option.value) {
+                  <mat-option [value]="option.value">{{ option.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          }
+          @case ('number') {
+            <mat-form-field>
+              <mat-label>{{ request.param.label }}</mat-label>
+              <input
+                matInput
+                type="number"
+                [value]="valueString(request)"
+                (input)="setNumber(request, $event)"
+                [min]="numberMin(request.param)"
+                [max]="numberMax(request.param)"
+                [step]="numberStep(request.param)"
+              />
+            </mat-form-field>
+          }
+          @default {
+            <mat-form-field>
+              <mat-label>{{ request.param.label }}</mat-label>
+              <input
+                matInput
+                type="text"
+                [value]="valueString(request)"
+                (input)="setText(request, $event)"
+              />
+            </mat-form-field>
+          }
+        }
+      </li>
+    }
+  </ul>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button matButton mat-dialog-close>Cancel</button>
+  <button matButton="filled" (click)="confirm()">Run flow</button>
+</mat-dialog-actions>

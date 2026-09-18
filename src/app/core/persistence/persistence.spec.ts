@@ -3,7 +3,8 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { defineTool } from '../tools/tool';
 import { provideTools } from '../tools/tool-registry';
 import { DocumentStore } from '../state/document-store';
-import { TextDocument } from '../state/models';
+import { FlowStore } from '../state/flow-store';
+import { Flow, TextDocument } from '../state/models';
 import { DB_NAME, openWorkspaceDB } from './document-db';
 import { PERSISTENCE_CONFIG, Persistence } from './persistence';
 
@@ -45,6 +46,7 @@ function deleteDb(): Promise<void> {
 
 describe('Persistence', () => {
   let store: InstanceType<typeof DocumentStore>;
+  let flowStore: InstanceType<typeof FlowStore>;
   let persistence: Persistence;
 
   beforeEach(async () => {
@@ -56,6 +58,7 @@ describe('Persistence', () => {
       ],
     });
     store = TestBed.inject(DocumentStore);
+    flowStore = TestBed.inject(FlowStore);
     persistence = TestBed.inject(Persistence);
   });
 
@@ -173,5 +176,47 @@ describe('Persistence', () => {
     expect((await db2.get('documents', id))!.currentContent).toBe('external v2');
     db2.close();
     expect(store.entityMap()[id].currentContent).toBe('external v2');
+  });
+
+  function makeFlow(overrides: Partial<Flow> = {}): Flow {
+    const steps = [{ toolId: 'append', toolName: 'Append', params: { s: '!' } }];
+    return {
+      id: 'flow-1',
+      name: 'Seeded flow',
+      description: '',
+      steps,
+      versions: [{ version: 1, steps, createdAt: 1 }],
+      createdAt: 1,
+      updatedAt: 1,
+      ...overrides,
+    };
+  }
+
+  it('hydrates flows from IndexedDB', async () => {
+    const db = await openWorkspaceDB();
+    await db.put('flows', makeFlow());
+    db.close();
+
+    await persistence.hydrate();
+
+    expect(flowStore.entities()).toHaveLength(1);
+    expect(flowStore.entityMap()['flow-1'].name).toBe('Seeded flow');
+  });
+
+  it('flushes flows and removes stale ones', async () => {
+    await persistence.hydrate();
+    flowStore.hydrate([makeFlow({ id: 'keep' }), makeFlow({ id: 'drop' })]);
+    await persistence.flush();
+
+    let db = await openWorkspaceDB();
+    expect((await db.getAllKeys('flows')).sort()).toEqual(['drop', 'keep']);
+    db.close();
+
+    flowStore.deleteFlow('drop');
+    await persistence.flush();
+
+    db = await openWorkspaceDB();
+    expect(await db.getAllKeys('flows')).toEqual(['keep']);
+    db.close();
   });
 });

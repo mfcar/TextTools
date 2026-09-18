@@ -1,14 +1,18 @@
 import { DBSchema, IDBPDatabase, openDB } from 'idb';
-import { TextDocument } from '../state/models';
+import { Flow, TextDocument } from '../state/models';
 
 export const DB_NAME = 'texttools';
-export const DB_VERSION = 1;
+export const DB_VERSION = 2;
 
-/** Schema for the persisted workspace: documents keyed by id, plus small meta. */
+/** Schema for the persisted workspace: documents and flows keyed by id, plus small meta. */
 export interface WorkspaceDB extends DBSchema {
   documents: {
     key: string;
     value: TextDocument;
+  };
+  flows: {
+    key: string;
+    value: Flow;
   };
   meta: {
     key: string;
@@ -24,6 +28,9 @@ export function openWorkspaceDB(): Promise<IDBPDatabase<WorkspaceDB>> {
       }
       if (!db.objectStoreNames.contains('meta')) {
         db.createObjectStore('meta');
+      }
+      if (!db.objectStoreNames.contains('flows')) {
+        db.createObjectStore('flows', { keyPath: 'id' });
       }
     },
   });

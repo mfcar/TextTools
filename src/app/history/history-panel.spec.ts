@@ -110,12 +110,43 @@ describe('HistoryPanel', () => {
     await store.applyTool(id, 'append', { s: 'b' });
     await flush();
 
-    expect(component['rows']().map((row) => row.index)).toEqual([1, 2]);
+    const indexes = () => component['rows']().map((row) => (row.kind === 'step' ? row.index : 0));
+    expect(indexes()).toEqual([1, 2]);
 
     component['toggleSort']();
     await flush();
 
-    expect(component['rows']().map((row) => row.index)).toEqual([2, 1]);
+    expect(indexes()).toEqual([2, 1]);
+  });
+
+  it('groups flow-applied steps and expands them on demand', async () => {
+    const id = store.openDocument({ content: 'hi' });
+    await store.applyFlow(id, {
+      id: 'f',
+      name: 'My flow',
+      description: '',
+      steps: [
+        { toolId: 'append', toolName: 'Append', params: { s: 'a' } },
+        { toolId: 'append', toolName: 'Append', params: { s: 'b' } },
+      ],
+      versions: [],
+      createdAt: 1,
+      updatedAt: 1,
+    });
+    await flush();
+
+    let rows = component['rows']();
+    expect(rows).toHaveLength(1);
+    expect(rows[0].kind).toBe('group');
+    const group = rows[0];
+    if (group.kind === 'group') {
+      expect(group.count).toBe(2);
+      component['toggleGroup'](group.runId);
+    }
+    await flush();
+
+    rows = component['rows']();
+    expect(rows.map((row) => row.kind)).toEqual(['group', 'step', 'step']);
   });
 
   it('branches a history index into a new document', async () => {

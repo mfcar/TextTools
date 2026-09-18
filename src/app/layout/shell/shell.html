@@ -28,6 +28,9 @@
       <span class="shell__search-key" aria-hidden="true">Ctrl K</span>
     </button>
     <span class="shell__spacer"></span>
+    <button matIconButton (click)="openFlows()" matTooltip="Flows" aria-label="Manage flows">
+      <mat-icon>account_tree</mat-icon>
+    </button>
     <button
       matIconButton
       (click)="openShortcuts()"
