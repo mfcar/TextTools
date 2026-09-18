@@ -1,6 +1,5 @@
-import { Component, computed, effect, inject, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, computed, effect, inject, signal } from '@angular/core';
 import { A11yModule } from '@angular/cdk/a11y';
-import { CdkVirtualScrollViewport, ScrollingModule } from '@angular/cdk/scrolling';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -12,12 +11,9 @@ import { DocumentStore } from '../core/state/document-store';
 import { UiStore } from '../core/state/ui-store';
 import { ParamSchema, ParamValue, SelectOption, ToolParams } from '../core/tools/param-schema';
 import { ToolDefinition } from '../core/tools/tool';
-import { ToolRegistry } from '../core/tools/tool-registry';
+import { ToolGroup, ToolRegistry } from '../core/tools/tool-registry';
 import { validateParams } from '../core/tools/validate-params';
 import { HighlightSegment, highlightMatches } from './highlight';
-
-const ITEM_SIZE = 60;
-const MAX_VISIBLE_ITEMS = 8;
 
 function defaultsOf(params: readonly ParamSchema[]): ToolParams {
   const values: ToolParams = {};
@@ -31,7 +27,6 @@ function defaultsOf(params: readonly ParamSchema[]): ToolParams {
   selector: 'app-command-palette',
   imports: [
     A11yModule,
-    ScrollingModule,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
@@ -46,23 +41,34 @@ export class CommandPalette {
   private readonly registry = inject(ToolRegistry);
   private readonly documents = inject(DocumentStore);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly host = inject(ElementRef<HTMLElement>);
   protected readonly ui = inject(UiStore);
-
-  private readonly viewport = viewChild(CdkVirtualScrollViewport);
 
   protected readonly query = signal('');
   protected readonly activeIndex = signal(0);
   protected readonly selected = signal<ToolDefinition | null>(null);
   protected readonly running = signal(false);
 
-  protected readonly results = computed(() => this.registry.search(this.query()));
+  protected readonly groups = computed<readonly ToolGroup[]>(() => {
+    const matches = this.registry.search(this.query());
+    const byCategory = new Map<string, ToolDefinition[]>();
+    for (const tool of matches) {
+      const list = byCategory.get(tool.category);
+      if (list) {
+        list.push(tool);
+      } else {
+        byCategory.set(tool.category, [tool]);
+      }
+    }
+    return [...byCategory.keys()]
+      .sort((a, b) => a.localeCompare(b))
+      .map((category) => ({ category, tools: byCategory.get(category) ?? [] }));
+  });
+  protected readonly results = computed(() => this.groups().flatMap((group) => group.tools));
   protected readonly activeTool = computed(() => {
     const list = this.results();
     return list.length === 0 ? null : list[Math.min(this.activeIndex(), list.length - 1)];
   });
-  protected readonly listHeight = computed(
-    () => `min(${Math.min(this.results().length, MAX_VISIBLE_ITEMS) * ITEM_SIZE}px, 60vh)`,
-  );
 
   private readonly paramValues = signal<ToolParams>({});
   protected readonly validation = computed(() => {
@@ -86,6 +92,13 @@ export class CommandPalette {
     this.activeIndex.set(0);
   }
 
+  protected setActiveTool(tool: ToolDefinition): void {
+    const index = this.results().indexOf(tool);
+    if (index >= 0) {
+      this.activeIndex.set(index);
+    }
+  }
+
   protected onKeydown(event: KeyboardEvent): void {
     if (event.key === 'Escape') {
       event.preventDefault();
@@ -104,11 +117,19 @@ export class CommandPalette {
     switch (event.key) {
       case 'ArrowDown':
         event.preventDefault();
-        this.moveActive(1);
+        this.stepRow(this.columnCount());
         break;
       case 'ArrowUp':
         event.preventDefault();
-        this.moveActive(-1);
+        this.stepRow(-this.columnCount());
+        break;
+      case 'ArrowRight':
+        event.preventDefault();
+        this.step(1);
+        break;
+      case 'ArrowLeft':
+        event.preventDefault();
+        this.step(-1);
         break;
       case 'Enter':
         event.preventDefault();
@@ -117,14 +138,37 @@ export class CommandPalette {
     }
   }
 
-  private moveActive(delta: number): void {
-    const count = this.results().length;
-    if (!count) {
+  private columnCount(): number {
+    const grid = this.host.nativeElement.querySelector('.palette__group-items');
+    if (!grid) {
+      return 1;
+    }
+    const tracks = getComputedStyle(grid).gridTemplateColumns.split(' ').filter(Boolean).length;
+    return tracks > 0 ? tracks : 1;
+  }
+
+  private step(delta: number): void {
+    const list = this.results();
+    if (!list.length) {
       return;
     }
-    const next = (this.activeIndex() + delta + count) % count;
-    this.activeIndex.set(next);
-    this.viewport()?.scrollToIndex(next);
+    this.setActive((this.activeIndex() + delta + list.length) % list.length);
+  }
+
+  private stepRow(delta: number): void {
+    const list = this.results();
+    if (!list.length) {
+      return;
+    }
+    this.setActive(Math.max(0, Math.min(this.activeIndex() + delta, list.length - 1)));
+  }
+
+  private setActive(index: number): void {
+    this.activeIndex.set(index);
+    const tool = this.results()[index];
+    this.host.nativeElement
+      .querySelector(`[id="palette-option-${tool.id}"]`)
+      ?.scrollIntoView({ block: 'nearest' });
   }
 
   protected choose(tool: ToolDefinition | null): void {

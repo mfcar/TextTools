@@ -110,49 +110,49 @@
         aria-label="Search tools"
         aria-expanded="true"
         aria-controls="palette-listbox"
-        [attr.aria-activedescendant]="activeTool() ? 'palette-option-' + activeIndex() : null"
+        [attr.aria-activedescendant]="activeTool() ? 'palette-option-' + activeTool()!.id : null"
         placeholder="Search tools…"
         [value]="query()"
         (input)="onSearch($event)"
       />
 
-      @if (results().length) {
-        <cdk-virtual-scroll-viewport
-          class="palette__list"
-          id="palette-listbox"
-          role="listbox"
-          aria-label="Tools"
-          itemSize="60"
-          [style.block-size]="listHeight()"
-        >
-          <button
-            *cdkVirtualFor="let tool of results(); let i = index"
-            type="button"
-            class="palette__item"
-            role="option"
-            tabindex="-1"
-            [id]="'palette-option-' + i"
-            [class.palette__item--active]="i === activeIndex()"
-            [attr.aria-selected]="i === activeIndex()"
-            (click)="choose(tool)"
-            (mouseenter)="activeIndex.set(i)"
-          >
-            <mat-icon aria-hidden="true">{{ tool.icon }}</mat-icon>
-            <span class="palette__item-text">
-              <span class="palette__item-name">
-                @for (segment of highlight(tool.name); track $index) {
-                  <span [class.palette__mark]="segment.match">{{ segment.text }}</span>
+      @if (groups().length) {
+        <div class="palette__list" id="palette-listbox" role="listbox" aria-label="Tools">
+          @for (group of groups(); track group.category) {
+            <section class="palette__group" role="group" [attr.aria-label]="group.category">
+              <h3 class="palette__group-head" aria-hidden="true">{{ group.category }}</h3>
+              <div class="palette__group-items" role="none">
+                @for (tool of group.tools; track tool.id) {
+                  <button
+                    type="button"
+                    class="palette__item"
+                    role="option"
+                    tabindex="-1"
+                    [id]="'palette-option-' + tool.id"
+                    [class.palette__item--active]="tool.id === activeTool()?.id"
+                    [attr.aria-selected]="tool.id === activeTool()?.id"
+                    (click)="choose(tool)"
+                    (mouseenter)="setActiveTool(tool)"
+                  >
+                    <mat-icon aria-hidden="true">{{ tool.icon }}</mat-icon>
+                    <span class="palette__item-text">
+                      <span class="palette__item-name">
+                        @for (segment of highlight(tool.name); track $index) {
+                          <span [class.palette__mark]="segment.match">{{ segment.text }}</span>
+                        }
+                      </span>
+                      <span class="palette__item-desc">
+                        @for (segment of highlight(tool.description); track $index) {
+                          <span [class.palette__mark]="segment.match">{{ segment.text }}</span>
+                        }
+                      </span>
+                    </span>
+                  </button>
                 }
-              </span>
-              <span class="palette__item-desc">
-                @for (segment of highlight(tool.description); track $index) {
-                  <span [class.palette__mark]="segment.match">{{ segment.text }}</span>
-                }
-              </span>
-            </span>
-            <span class="palette__item-cat">{{ tool.category }}</span>
-          </button>
-        </cdk-virtual-scroll-viewport>
+              </div>
+            </section>
+          }
+        </div>
       } @else {
         <p class="palette__empty">No matching tools.</p>
       }

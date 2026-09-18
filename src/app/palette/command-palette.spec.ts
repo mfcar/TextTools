@@ -47,6 +47,7 @@ describe('CommandPalette', () => {
 
   const flush = async () => {
     await fixture.whenStable();
+    await new Promise((resolve) => setTimeout(resolve));
     fixture.detectChanges();
     await fixture.whenStable();
   };
@@ -89,6 +90,24 @@ describe('CommandPalette', () => {
     expect(component['results']().map((tool) => tool.id)).toEqual(['upper']);
   });
 
+  it('groups tools by category, sorted alphabetically', async () => {
+    await open();
+
+    const groups = component['groups']();
+    expect(groups.map((group) => group.category)).toEqual(['Case', 'Text']);
+    expect(groups[0].tools.map((tool) => tool.id)).toEqual(['upper']);
+    expect(groups[1].tools.map((tool) => tool.id)).toEqual(['repeat', 'boom']);
+  });
+
+  it('drops categories with no matching tools while searching', async () => {
+    await open();
+    component['onSearch']({ target: { value: 'repeat' } } as unknown as Event);
+
+    const groups = component['groups']();
+    expect(groups.map((group) => group.category)).toEqual(['Text']);
+    expect(groups[0].tools.map((tool) => tool.id)).toEqual(['repeat']);
+  });
+
   it('shows an empty state when nothing matches', async () => {
     await open();
     component['onSearch']({ target: { value: 'zzzz' } } as unknown as Event);
@@ -97,16 +116,19 @@ describe('CommandPalette', () => {
     expect(fixture.nativeElement.querySelector('.palette__empty')).toBeTruthy();
   });
 
-  it('moves the active item with the arrow keys', async () => {
+  it('moves the active item left and right with the arrow keys', async () => {
     await open();
     const preventDefault = vi.fn();
 
-    component['onKeydown']({ key: 'ArrowDown', preventDefault } as unknown as KeyboardEvent);
+    component['onKeydown']({ key: 'ArrowRight', preventDefault } as unknown as KeyboardEvent);
     expect(component['activeIndex']()).toBe(1);
 
-    component['onKeydown']({ key: 'ArrowUp', preventDefault } as unknown as KeyboardEvent);
+    component['onKeydown']({ key: 'ArrowLeft', preventDefault } as unknown as KeyboardEvent);
     expect(component['activeIndex']()).toBe(0);
-    expect(preventDefault).toHaveBeenCalledTimes(2);
+
+    component['onKeydown']({ key: 'ArrowLeft', preventDefault } as unknown as KeyboardEvent);
+    expect(component['activeIndex']()).toBe(2);
+    expect(preventDefault).toHaveBeenCalledTimes(3);
   });
 
   it('runs a param-less tool immediately and closes', async () => {

@@ -37,6 +37,31 @@ test.describe('Command palette', () => {
     await expect(page.locator('.cm-content')).toHaveText('HELLO WORLD');
   });
 
+  test('navigates the tool grid with the arrow keys', async ({ page }) => {
+    await openPalette(page);
+
+    const activeText = async () =>
+      (await page.locator('.palette__item[aria-selected="true"]').textContent())?.trim();
+
+    const first = await activeText();
+    expect(first).toBeTruthy();
+
+    await page.keyboard.press('ArrowRight');
+    await expect.poll(activeText).not.toBe(first);
+    const afterRight = await activeText();
+
+    await page.keyboard.press('ArrowLeft');
+    await expect.poll(activeText).toBe(first);
+
+    await page.keyboard.press('ArrowDown');
+    await expect.poll(activeText).not.toBe(first);
+    const afterDown = await activeText();
+    expect(afterDown).not.toBe(afterRight);
+
+    await page.keyboard.press('ArrowUp');
+    await expect.poll(activeText).toBe(first);
+  });
+
   test('runs a parameterized tool through the two-stage form', async ({ page }) => {
     await typeInEditor(page, 'ab');
 
